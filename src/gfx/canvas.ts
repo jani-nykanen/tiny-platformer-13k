@@ -32,14 +32,14 @@ export class Canvas {
 
     constructor(minWidth : number, maxWidth : number,
         minHeight : number, maxHeight : number,
-        assets : Assets) {
+        assets : Assets, embed : boolean = true) {
 
         this.minWidth = minWidth;
         this.maxWidth = maxWidth;
         this.minHeight = minHeight;
         this.maxHeight = maxHeight;
 
-        this.createCanvas(minWidth, minHeight);
+        this.createCanvas(minWidth, minHeight, embed);
         this.resizeEvent(window.innerWidth, window.innerHeight);
 
         this.assets = assets;
@@ -51,11 +51,15 @@ export class Canvas {
     }
 
 
-    private createCanvas(width : number, height : number) : void {
+    private createCanvas(width : number, height : number, embed : boolean = true) : void {
 
-        const div : HTMLDivElement = document.createElement("div");
-        div.id = "d";
-        div.setAttribute("style", "position: absolute; top: 0; left: 0; z-index: -1;");
+        let div : HTMLDivElement | undefined = undefined;
+        if (embed) {
+
+            div = document.createElement("div");
+            div.id = "d";
+            div.setAttribute("style", "position: absolute; top: 0; left: 0; z-index: -1;");
+        }
         
         this.canvas = document.createElement("canvas");
         this.canvas.setAttribute("style", 
@@ -68,8 +72,11 @@ export class Canvas {
         this.canvas.width = width;
         this.canvas.height = height;
 
-        div.appendChild(this.canvas);
-        document.body.appendChild(div);
+        if (embed) { 
+
+            div.appendChild(this.canvas);
+            document.body.appendChild(div);
+        }
 
         // Typecast used to avoid warning that this can be null. Yes, it can, but
         // we don't have enough room for proper error/type safety checking.
@@ -272,4 +279,8 @@ export class Canvas {
         this.translation.x = dx;
         this.translation.y = dy;
     }
+
+
+    // A bit of cheating here
+    public toBitmap = () : Bitmap => this.canvas;
 }

@@ -32,6 +32,9 @@ export class Game implements Scene {
 
         const bmpGameArt : Bitmap = canvas.assets.getBitmap("g");
         canvas.drawBitmap(bmpGameArt, Flip.None, 8, 8);
+
+        const bmpTileset : Bitmap = canvas.assets.getBitmap("ts");
+        canvas.drawBitmap(bmpTileset, Flip.None, 96, 8);
     }
 
 
