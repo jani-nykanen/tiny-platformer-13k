@@ -70,6 +70,8 @@ const generateGameArt = (assets : Assets) : void => {
 
 const generateTileset = (assets : Assets) : void => {
 
+    const BRIDGE_YOFF : number = 11;
+
     const bmpGameArt : Bitmap = assets.getBitmap("g");
     const canvas : Canvas = new Canvas(256, 256, 256, 256, assets, false);
 
@@ -137,16 +139,15 @@ const generateTileset = (assets : Assets) : void => {
                 }
             }
         }   
-    }
 
-    // Corner pieces
-    for (let i = 0; i < 2; ++ i) {
-
+        // Corner pieces
         canvas.drawBitmap(bmpGameArt, Flip.None, i*16, 32, 40, 0, 16, 16);
         canvas.drawBitmap(bmpGameArt, Flip.None, i*24, 32, 40 + i*8, 16, 8, 8);
-    }
 
-    
+        // Bridge
+        canvas.drawBitmap(bmpGameArt, Flip.None, 96 + i*8, BRIDGE_YOFF, 56, 16, 8, 16);
+        canvas.drawBitmap(bmpGameArt, Flip.None, 96 + i*8, BRIDGE_YOFF + 5, 56, 8, 8, 8);
+    }
 
     assets.addBitmap("ts", canvas.toBitmap());
 }
