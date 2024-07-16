@@ -13,32 +13,39 @@ const PALETTE_LOOKUP : string[] = [
     "000000ff", // 1 Black
     "ffffffff", // 2 White
     "6d6d6dff", // 3 Dark gray
-    "b6b6b6ff", // 4 Bright gray,
+    "b6b6b6ff", // 4 Light gray,
 
     // Grass
     "499200ff", // 5 Dark(er) green
     "92db00ff", // 6 Green
-    "ffff92ff", // 7 Bright yellow
+    "ffff92ff", // 7 Light yellow
 
     // Soil
     "db6d00ff", // 8 Dark soil color
-    "ffb66dff", // 9 Bright soil color
-    "db9249ff", // A Alt. bright soil
+    "ffb66dff", // 9 Light soil color
+    "db9249ff", // A Alt. Light soil
 
+    // Blue boxes
+    "2449b6ff", // B Dark blue
+    "4992ffff", // C Blue
+    "92dbffff", // D Light blue
+
+    // Star block
+    "ffdb92ff", // E Very light brownish
+    "924900ff", // F Darker brown
 ];
 
 
 const GAME_ART_PALETTE_TABLE : string[] = [
 
-
     "1068", "1068", "1068", "1068", "1068", "10A9", "10A9", "1089",
     "8057", "8057", "8057", "1068", "1068", "10A9", "10A9", "0007",
 
     "1032", "1031", "1032", "0057", "0057", "1068", "1068", "1089",
-    "1032", "1031", "1056", "8057", "8057", "7095", "7005", "1098",
+    "1032", "1031", "B002", "8057", "8057", "7095", "7005", "1098",
 
-    "1400", "1400", "1200", "1300", "1402", "1403", "1402", "1403", 
-    "1400", "1400", "1200", "1300", "1402", "1403", "1402", "1403", 
+    "10BD", "10BD", "0002", "10FE", "10FE", "1007", "1007", "1403", 
+    "10BD", "10BD", "1043", "10FE", "10FE", "1007", "1007", "1403", 
 ];
 
 
@@ -69,14 +76,7 @@ const generateGameArt = (assets : Assets) : void => {
 }
 
 
-const generateTileset = (assets : Assets) : void => {
-
-    const BRIDGE_YOFF : number = 11;
-
-    const bmpGameArt : Bitmap = assets.getBitmap("g");
-    const canvas : Canvas = new Canvas(256, 256, 256, 256, assets, false);
-
-    // TODO: Split to shorter functions...
+const generateSoilTilesAndBridge = (canvas : Canvas, bmpGameArt : Bitmap) : void => {
 
     // Soil
     for (let i = 0; i < 2; ++ i) {
@@ -144,31 +144,45 @@ const generateTileset = (assets : Assets) : void => {
         // Corner pieces
         canvas.drawBitmap(bmpGameArt, Flip.None, i*16, 32, 40, 0, 16, 16);
         canvas.drawBitmap(bmpGameArt, Flip.None, i*24, 32, 40 + i*8, 16, 8, 8);
-        canvas.drawBitmap(bmpGameArt, Flip.None, i*24, 32, 40 + i*8, 24, 8, 8);
-
-        // Bridge
-        canvas.drawBitmap(bmpGameArt, Flip.None, 96 + i*8, BRIDGE_YOFF, 56, 16, 8, 16);
-        canvas.drawBitmap(bmpGameArt, Flip.None, 96 + i*8, BRIDGE_YOFF + 5, 56, 8, 8, 8);
+        canvas.drawBitmap(bmpGameArt, Flip.None, i*24, 32, 40 + i*8, 24, 8, 8); 
     }
+}
+
+
+const generateBlocks = (canvas : Canvas, bmpGameArt : Bitmap) : void => {
 
     // Small clay block
     canvas.setFillColor("#" + PALETTE_LOOKUP[4]);
     canvas.fillRect(33, 33, 14, 14);
     canvas.drawBitmap(bmpGameArt, Flip.None, 32, 32, 0, 16, 16, 16);
 
-    // Big clay block:
+    //
+    // Big clay block & blue container
+    //
+
     // "Body"
     canvas.fillRect(49, 33, 30, 30);
+    canvas.setFillColor("#" + PALETTE_LOOKUP[12]);
+    canvas.fillRect(1, 49, 46, 46);
+
     // Edges
     for (let i = 0; i < 4; ++ i) {
 
-        // Horizontal
+        // Gray block horizontal
         canvas.drawBitmap(bmpGameArt, Flip.None, 54 + i*6, 32, 5, 16, 6, 4);
         canvas.drawBitmap(bmpGameArt, Flip.None, 54 + i*6, 60, 5, 28, 6, 4);
 
-        // Vertical
+        // Gray block vertical
         canvas.drawBitmap(bmpGameArt, Flip.None, 48, 38 + i*6, 0, 21, 4, 6);
         canvas.drawBitmap(bmpGameArt, Flip.None, 76, 38 + i*6, 12, 21, 4, 6);
+
+        // Blue box horizontal
+        canvas.drawBitmap(bmpGameArt, Flip.None, 0, 56 + i*8, 0, 36, 8, 8);
+        canvas.drawBitmap(bmpGameArt, Flip.None, 40, 56 + i*8, 8, 36, 8, 8);
+
+        // Blue box vertical
+        canvas.drawBitmap(bmpGameArt, Flip.None, 8 + i*8, 48, 4, 32, 8, 8);
+        canvas.drawBitmap(bmpGameArt, Flip.None, 8 + i*8, 88, 4, 40, 8, 8);
     }
 
     // Corners
@@ -176,13 +190,66 @@ const generateTileset = (assets : Assets) : void => {
 
         for (let y = 0; y < 2; ++ y) {
 
+            // Gray block
             canvas.drawBitmap(bmpGameArt, Flip.None, 48 + x*26, 32 + y*26, x*10, 16 + y*10, 6, 6);
+
+            // Blue block corners
+            canvas.drawBitmap(bmpGameArt, Flip.None, x*40, 48 + y*40, x*8, 32 + y*8, 8, 8);
+            // ...and screws
+            canvas.drawBitmap(bmpGameArt, Flip.None, 2 + x*36, 50 + y*37, 16, 24, 8, 8);
+
+            // Star block bodies
+            canvas.setFillColor("#" + PALETTE_LOOKUP[10]);
+            canvas.fillRect(48 + x*16 + 1, 64 + y*16 + 1, 14 + x, 14);
+            canvas.drawBitmap(bmpGameArt, Flip.None, 48 + x*16, 64 + y*16, 24, 32, 16 - x*3, 16);
+            if (x == 1) {
+                
+                canvas.drawBitmap(bmpGameArt, Flip.None, 48 + x*16 + 11, 64 + y*16, 34, 32, 5, 16);
+            }
+
+            // Stars
+            const yshift : number = x*10; 
+            canvas.drawBitmap(bmpGameArt, Flip.None, 48 + x*16, 64 + y*16 + 3, 40, 32, 16, 10);
         }
 
         // Eyes
         canvas.drawBitmap(bmpGameArt, Flip.None, 55 + x*10, 43, 16, 16, 8, 8);
     }
+}
+
+
+const generateMisc = (canvas : Canvas, bmpGameArt : Bitmap) : void => {
+
+    const BRIDGE_YOFF : number = 11;
+
+    for (let i = 0; i < 2; ++ i) {
+
+        // Bridge
+        canvas.drawBitmap(bmpGameArt, Flip.None, 96 + i*8, BRIDGE_YOFF, 56, 16, 8, 16);
+        canvas.drawBitmap(bmpGameArt, Flip.None, 96 + i*8, BRIDGE_YOFF + 5, 56, 8, 8, 8);
+
+        // Spikes
+        canvas.drawBitmap(bmpGameArt, Flip.None, 80 + i*8, 40, 16, 40, 8, 8);
+        canvas.drawBitmap(bmpGameArt, Flip.None, 80 + i*8, 40, 16, 32, 8, 8);
+
+        // Spike tops
+        canvas.setFillColor("#000000");
+        canvas.fillRect(84 + i*8, 39, 1, 1);
+    }
+}
+
+
+const generateTileset = (assets : Assets) : void => {
+
+    const bmpGameArt : Bitmap = assets.getBitmap("g");
+    const canvas : Canvas = new Canvas(256, 256, 256, 256, assets, false);
+
+    generateSoilTilesAndBridge(canvas, bmpGameArt);
+    generateBlocks(canvas, bmpGameArt);
+    generateMisc(canvas, bmpGameArt);
+
     assets.addBitmap("ts", canvas.toBitmap());
+    
 }
 
 
