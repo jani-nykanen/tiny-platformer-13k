@@ -39,12 +39,14 @@ export class Canvas {
         this.minHeight = minHeight;
         this.maxHeight = maxHeight;
 
-        this.createCanvas(minWidth, minHeight, embed);
-        this.resizeEvent(window.innerWidth, window.innerHeight);
-
         this.assets = assets;
 
-        window.addEventListener("resize", () : void => this.resizeEvent(window.innerWidth, window.innerHeight));
+        this.createCanvas(minWidth, minHeight, embed);
+        if (embed) {
+
+            this.resizeEvent(window.innerWidth, window.innerHeight);
+            window.addEventListener("resize", () : void => this.resizeEvent(window.innerWidth, window.innerHeight));
+        }
 
         // Hide cursor
         // document.body.style.cursor = "none";

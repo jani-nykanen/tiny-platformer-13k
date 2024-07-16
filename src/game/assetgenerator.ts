@@ -12,8 +12,8 @@ const PALETTE_LOOKUP : string[] = [
     // Black, white and shades of gray
     "000000ff", // 1 Black
     "ffffffff", // 2 White
-    "494949ff", // 3 Dark gray
-    "6d6d6dff", // 4 Not-so-dark gray,
+    "6d6d6dff", // 3 Dark gray
+    "b6b6b6ff", // 4 Bright gray,
 
     // Grass
     "499200ff", // 5 Dark(er) green
@@ -23,6 +23,7 @@ const PALETTE_LOOKUP : string[] = [
     // Soil
     "db6d00ff", // 8 Dark soil color
     "ffb66dff", // 9 Bright soil color
+    "db9249ff", // A Alt. bright soil
 
 ];
 
@@ -30,11 +31,11 @@ const PALETTE_LOOKUP : string[] = [
 const GAME_ART_PALETTE_TABLE : string[] = [
 
 
-    "1065", "1065", "1065", "1065", "1065", "1089", "1089", "1089",
-    "0007", "0007", "0007", "1065", "1065", "1089", "1089", "0007",
+    "1068", "1068", "1068", "1068", "1068", "10A9", "10A9", "1089",
+    "8057", "8057", "8057", "1068", "1068", "10A9", "10A9", "0007",
 
-    "1076", "1056", "1056", "0007", "0007", "1065", "1065", "1089",
-    "1056", "1056", "1056", "0007", "0007", "1000", "000A", "1098",
+    "1032", "1031", "1032", "0057", "0057", "1068", "1068", "1089",
+    "1032", "1031", "1056", "8057", "8057", "7095", "7005", "1098",
 
     "1400", "1400", "1200", "1300", "1402", "1403", "1402", "1403", 
     "1400", "1400", "1200", "1300", "1402", "1403", "1402", "1403", 
@@ -111,10 +112,10 @@ const generateTileset = (assets : Assets) : void => {
                     }
                     else if (y > 0) {
 
-                        const shiftx : number = (x & 1)*8;
+                        const shiftx : number = x & 1;
 
-                        canvas.drawBitmap(bmpGameArt, Flip.None, 48 + x*8, y*8, 24 + shiftx, 8, 8, 8);
-                        canvas.drawBitmap(bmpGameArt, Flip.None, 48 + x*8, y*8, 24 + shiftx, 24, 8, 8);
+                        canvas.drawBitmap(bmpGameArt, Flip.None, 48 + x*8, y*8, 24 + shiftx*8, 8, 8, 8);
+                        canvas.drawBitmap(bmpGameArt, Flip.None, 48 + x*8 + (1 - 2*shiftx), y*8, 24 + shiftx*8, 24, 8, 8);
                         
                     }
                 }
@@ -127,7 +128,7 @@ const generateTileset = (assets : Assets) : void => {
                         const sx : number = x == 0 ? 0 : (x == 5 ? 16 : 8);
 
                         canvas.drawBitmap(bmpGameArt, Flip.None, i*48 + x*8, y*8, sx, 0, 8, 8);
-                        canvas.drawBitmap(bmpGameArt, Flip.None, i*48 + x*8, y*8, sx, 8, 8, 8);
+                        canvas.drawBitmap(bmpGameArt, Flip.None, i*48 + x*8, y*8 + 1, sx, 8, 8, 8);
                     }
                     else {
 
@@ -143,12 +144,44 @@ const generateTileset = (assets : Assets) : void => {
         // Corner pieces
         canvas.drawBitmap(bmpGameArt, Flip.None, i*16, 32, 40, 0, 16, 16);
         canvas.drawBitmap(bmpGameArt, Flip.None, i*24, 32, 40 + i*8, 16, 8, 8);
+        canvas.drawBitmap(bmpGameArt, Flip.None, i*24, 32, 40 + i*8, 24, 8, 8);
 
         // Bridge
         canvas.drawBitmap(bmpGameArt, Flip.None, 96 + i*8, BRIDGE_YOFF, 56, 16, 8, 16);
         canvas.drawBitmap(bmpGameArt, Flip.None, 96 + i*8, BRIDGE_YOFF + 5, 56, 8, 8, 8);
     }
 
+    // Small clay block
+    canvas.setFillColor("#" + PALETTE_LOOKUP[4]);
+    canvas.fillRect(33, 33, 14, 14);
+    canvas.drawBitmap(bmpGameArt, Flip.None, 32, 32, 0, 16, 16, 16);
+
+    // Big clay block:
+    // "Body"
+    canvas.fillRect(49, 33, 30, 30);
+    // Edges
+    for (let i = 0; i < 4; ++ i) {
+
+        // Horizontal
+        canvas.drawBitmap(bmpGameArt, Flip.None, 54 + i*6, 32, 5, 16, 6, 4);
+        canvas.drawBitmap(bmpGameArt, Flip.None, 54 + i*6, 60, 5, 28, 6, 4);
+
+        // Vertical
+        canvas.drawBitmap(bmpGameArt, Flip.None, 48, 38 + i*6, 0, 21, 4, 6);
+        canvas.drawBitmap(bmpGameArt, Flip.None, 76, 38 + i*6, 12, 21, 4, 6);
+    }
+
+    // Corners
+    for (let x = 0; x < 2; ++ x) {
+
+        for (let y = 0; y < 2; ++ y) {
+
+            canvas.drawBitmap(bmpGameArt, Flip.None, 48 + x*26, 32 + y*26, x*10, 16 + y*10, 6, 6);
+        }
+
+        // Eyes
+        canvas.drawBitmap(bmpGameArt, Flip.None, 55 + x*10, 43, 16, 16, 8, 8);
+    }
     assets.addBitmap("ts", canvas.toBitmap());
 }
 
