@@ -5,6 +5,8 @@ import { Canvas } from "../gfx/canvas.js";
 import { Flip } from "../gfx/flip.js";
 
 
+// TODO: Do people say "light" or "bright" when
+// talking about non-darker shades...?
 const PALETTE_LOOKUP : string[] = [
 
     "00000000", // 0 Transparent
@@ -33,6 +35,11 @@ const PALETTE_LOOKUP : string[] = [
     // Star block
     "ffdb92ff", // E Very light brownish
     "924900ff", // F Darker brown
+
+    // Mushroom
+    "b62400ff", // G Dark, orange-ish red
+    "ff4900ff", // H Orange
+    "ff9200ff", // I Brighter orange
 ];
 
 
@@ -46,6 +53,10 @@ const GAME_ART_PALETTE_TABLE : string[] = [
 
     "10BD", "10BD", "0002", "10FE", "10FE", "1007", "1007", "1403", 
     "10BD", "10BD", "1043", "10FE", "10FE", "1007", "1007", "1403", 
+
+    "10HG", "10HG", "10HG", "10HG", "000I", "1IE2", "1IE2", "10HG",
+    "10HG", "10HG", "10HG", "10HG", "10E2", "10E2", "10E2", "000I",
+
 ];
 
 
@@ -79,6 +90,7 @@ const generateGameArt = (assets : Assets) : void => {
 const generateSoilTilesAndBridge = (canvas : Canvas, bmpGameArt : Bitmap) : void => {
 
     // Soil
+    // (What a beautiful nested for loop!)
     for (let i = 0; i < 2; ++ i) {
 
         for (let y = 0; y < 4; ++ y) {
@@ -207,9 +219,10 @@ const generateBlocks = (canvas : Canvas, bmpGameArt : Bitmap) : void => {
                 canvas.drawBitmap(bmpGameArt, Flip.None, 48 + x*16 + 11, 64 + y*16, 34, 32, 5, 16);
             }
 
-            // Stars
-            const yshift : number = x*10; 
-            canvas.drawBitmap(bmpGameArt, Flip.None, 48 + x*16, 64 + y*16 + 3, 40, 32, 16, 10);
+            // Faces in star blocks
+            const yshift : number = y*10;
+            const h : number = y*6 + (1 - y)*10; 
+            canvas.drawBitmap(bmpGameArt, Flip.None, 48 + x*16, 64 + y*16 + 3, 40, 32 + yshift, 16, h);
         }
 
         // Eyes
@@ -218,9 +231,36 @@ const generateBlocks = (canvas : Canvas, bmpGameArt : Bitmap) : void => {
 }
 
 
+const generateMushrooms = (canvas : Canvas, bmpGameArt : Bitmap) : void => {
+
+    const RING_OFFSET : number = 2;
+
+    // Leg
+    canvas.drawBitmap(bmpGameArt, Flip.None, 128, 12, 40, 48, 16, 8);
+    for (let i = 0; i < 8; ++ i) {
+
+        canvas.drawBitmap(bmpGameArt, Flip.None, 128, 16 + i*4, 40, 52, 16, 4);
+    }
+
+    // No idea what this is called. Skirt? Ring?
+    canvas.drawBitmap(bmpGameArt, Flip.None, 124, 16 + RING_OFFSET, 32, 56, 24, 8);
+    canvas.drawBitmap(bmpGameArt, Flip.None, 138, 16 + RING_OFFSET, 56, 56, 8, 8);
+
+    // Base hat
+    canvas.drawBitmap(bmpGameArt, Flip.None, 112, 0, 0, 48, 16, 16);
+    canvas.drawBitmap(bmpGameArt, Flip.None, 128, 0, 8, 48, 16, 16);
+    canvas.drawBitmap(bmpGameArt, Flip.None, 144, 0, 16, 48, 16, 16);
+
+    // Hat shading
+    canvas.drawBitmap(bmpGameArt, Flip.None, 113, 1, 32, 48, 8, 8);
+    canvas.setFillColor("#" + PALETTE_LOOKUP[18]);
+    canvas.fillRect(120, 1, 35, 1);
+}
+
+
 const generateMisc = (canvas : Canvas, bmpGameArt : Bitmap) : void => {
 
-    const BRIDGE_YOFF : number = 11;
+    const BRIDGE_YOFF : number = 13;
 
     for (let i = 0; i < 2; ++ i) {
 
@@ -246,6 +286,7 @@ const generateTileset = (assets : Assets) : void => {
 
     generateSoilTilesAndBridge(canvas, bmpGameArt);
     generateBlocks(canvas, bmpGameArt);
+    generateMushrooms(canvas, bmpGameArt);
     generateMisc(canvas, bmpGameArt);
 
     assets.addBitmap("ts", canvas.toBitmap());
