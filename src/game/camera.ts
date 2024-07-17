@@ -3,12 +3,14 @@ import { ProgramEvent } from "../core/event.js";
 import { Canvas } from "../gfx/canvas.js";
 import { InputState } from "../core/inputstate.js";
 import { Rectangle } from "../math/rectangle.js";
+import { GameObject, updateSpeedAxis } from "./gameobject.js";
 
 
 export class Camera {
 
 
     private pos : Vector;
+    private targetPos : Vector;
 
     private cwidth : number
     private cheight : number;
@@ -38,13 +40,49 @@ export class Camera {
         this.cheight = event.screenHeight;
 
         this.pos = new Vector(x, y);
+        this.targetPos = new Vector(x, y);
+    }
+
+
+    public followObject(o : GameObject) : void {
+
+        const HORIZONTAL_THRESHOLD : number = 16;
+        const VERTICAL_THRESHOLD : number = 16;
+
+        const X_OFFSET : number = 0;
+        const Y_OFFSET : number = -16;
+
+        const p : Vector = o.getPosition();
+        p.x -= this.width/2;
+        p.y -= this.height/2;
+
+        const target : Vector = new Vector(p.x + X_OFFSET, p.y + Y_OFFSET);
+        if (Math.abs(target.x - this.pos.x) > HORIZONTAL_THRESHOLD) {
+
+            this.targetPos.x = target.x - Math.sign(target.x - this.pos.x)*HORIZONTAL_THRESHOLD;
+        }
+
+        if (Math.abs(target.y - this.pos.y) > VERTICAL_THRESHOLD) {
+
+            this.targetPos.y = target.y - Math.sign(target.y - this.pos.y)*VERTICAL_THRESHOLD;
+        }
     }
 
 
     public update(event : ProgramEvent) : void {
 
+        const H_FACTOR : number = 8;
+        const V_FACTOR : number = 6;
+
         this.cwidth = event.screenWidth;
         this.cheight = event.screenHeight;
+
+        this.pos.x = updateSpeedAxis(this.pos.x, 
+            this.targetPos.x, 
+            Math.round(Math.abs(this.pos.x - this.targetPos.x)/H_FACTOR)*event.tick);
+        this.pos.y = updateSpeedAxis(this.pos.y, 
+            this.targetPos.y, 
+            Math.round(Math.abs(this.pos.y - this.targetPos.y)/V_FACTOR)*event.tick);
     }
 
 

@@ -44,18 +44,19 @@ export class Tilemap {
     );
 
 
-    public getTile(layerName : string, x : number, y : number, def : number = 0) : number {
+    public getTile(layer : number, x : number, y : number, def : number = 0) : number {
 
-        const layer : number[] | undefined = this.layers[layerName];
-        if (layer === undefined) {
-
-            return def;
-        }
-
-        if (x < 0 || y < 0 || x >= this.width || y >= this.height) {
+        if (layer < 0 || layer >= this.layers.length ||
+            x < 0 || y < 0 || x >= this.width || y >= this.height) {
 
             return def;
         }
-        return layer[y*this.width + x];
+        return this.layers[layer][y*this.width + x];
+    }
+
+
+    public getIndexedTile(layer : number, index : number, def : number = 0) {
+
+        return (this.layers[layer] ?? [])[index] ?? def;
     }
 }

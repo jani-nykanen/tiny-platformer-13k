@@ -20,6 +20,8 @@ export class ObjectManager {
     public update(camera : Camera, stage : Stage, event : ProgramEvent) : void {
 
         this.player.update(event);
+        camera.followObject(this.player);
+        stage.objectCollision(this.player, event);
     }
 
 
