@@ -5,6 +5,7 @@ import { Bitmap } from "../gfx/bitmap.js";
 import { Flip } from "../gfx/flip.js";
 import { Stage } from "./stage.js";
 import { Camera } from "./camera.js";
+import { ObjectManager } from "./objectmanager.js";
 
 
 export class Game implements Scene {
@@ -12,12 +13,14 @@ export class Game implements Scene {
 
     private camera : Camera;
     private stage : Stage;
+    private objects : ObjectManager;
 
 
     constructor(event : ProgramEvent) {
 
         this.camera = new Camera(0, 0, event);
         this.stage = new Stage();
+        this.objects = new ObjectManager();
     }
 
     
@@ -29,6 +32,7 @@ export class Game implements Scene {
 
     public update(event : ProgramEvent) : void {
         
+        this.objects.update(this.camera, this.stage, event);
         this.camera.update(event);
     }
 
@@ -48,6 +52,7 @@ export class Game implements Scene {
 
         this.camera.apply(canvas);
         this.stage.drawLayers(canvas, this.camera);
+        this.objects.draw(canvas);
 
         canvas.moveTo();
         // TODO: Draw HUD etc.

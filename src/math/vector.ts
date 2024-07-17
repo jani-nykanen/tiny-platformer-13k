@@ -35,14 +35,7 @@ export class Vector {
         this.w = 0;
 	}
 
-
-    public overlay(rect : Rectangle) : boolean {
-
-        return this.x >= rect.x && this.x <= rect.x + rect.w &&
-               this.y >= rect.y && this.y <= rect.y + rect.h; 
-    }
-
-
+    
     static normalize(v : Vector, forceUnit : boolean = false) : Vector {
 		
 		const EPS : number = 0.0001;

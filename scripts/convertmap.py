@@ -1,7 +1,6 @@
 #!/bin/python3
 
 import xml.etree.ElementTree as ET
-import os
 import sys
 
 
@@ -35,18 +34,30 @@ def RLE(input : list[int]) -> list[int]:
     out.append(count)
     return out
 
-# Set the script directory as the working directory,
-# so we always find the sample map in the same place
-os.chdir(sys.path[0])
+
+path : str = sys.argv[1]
+# For the collision tiles we want
+# to ignore the first layer
+ignorefirst : bool = False
+for a in sys.argv:
+    if a == "-ignorefirst":
+        ignorefirst = True
+        break
 
 # Parse the file and get all the required info (dimensions & layers)
-root : ET.Element = ET.parse("./sample.tmx").getroot()
+root : ET.Element = ET.parse(path).getroot()
 
 width : int = root.attrib["width"]
 height : int = root.attrib["height"]
 
+# Parse layers (possibly ignoring the first one
+# if needed)
 layers : list[list[int]] = []
+isfirst : bool = True
 for l in root.iter("data"):
+    if isfirst and ignorefirst:
+        isfirst = False
+        continue
     layers.append(RLE(parse_layer(l.text)))
 
 # Construct the final JSON string

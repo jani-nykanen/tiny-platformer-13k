@@ -2,6 +2,7 @@ import { Vector } from "../math/vector.js";
 import { ProgramEvent } from "../core/event.js";
 import { Canvas } from "../gfx/canvas.js";
 import { InputState } from "../core/inputstate.js";
+import { Rectangle } from "../math/rectangle.js";
 
 
 export class Camera {
@@ -42,20 +43,14 @@ export class Camera {
 
     public update(event : ProgramEvent) : void {
 
-        const TEMP_MOVE_SPEED : number = 4;
-
         this.cwidth = event.screenWidth;
         this.cheight = event.screenHeight;
+    }
 
-        // Temporary control
-        if (event.input.getAction("r") & InputState.DownOrPressed) {
 
-            this.pos.x += TEMP_MOVE_SPEED*event.tick;
-        }
-        else if (event.input.getAction("l") & InputState.DownOrPressed) {
+    public isInsideVisibleArea(pos : Vector, area : Rectangle) : boolean {
 
-            this.pos.x -= TEMP_MOVE_SPEED*event.tick;
-        }
+        return false;
     }
 
 

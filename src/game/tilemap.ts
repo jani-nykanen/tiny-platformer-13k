@@ -36,8 +36,6 @@ export class Tilemap {
 
             this.layers[i] = unpackLayer(packedData.layers[i]);
         }
-
-        console.log(this.layers);
     }
 
 

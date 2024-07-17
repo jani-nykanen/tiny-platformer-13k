@@ -72,4 +72,6 @@ test_temp:
 .PHONY: levels
 levels:
 	echo "export const LEVEL_DATA : {width : number, height : number, layers : number[][]} = " > $(LEVEL_SRC_PATH)
-	python3 ./tiled/convert.py  >> $(LEVEL_SRC_PATH)
+	./scripts/convertmap.py ./tiled/sample.tmx >> $(LEVEL_SRC_PATH)
+	echo "export const COLLISION_DATA : {width : number, height : number, layers : number[][]} = " >> $(LEVEL_SRC_PATH)
+	./scripts/convertmap.py ./tiled/collision_tiles.tmx -ignorefirst >> $(LEVEL_SRC_PATH)
