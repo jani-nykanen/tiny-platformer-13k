@@ -6,6 +6,7 @@ import { Flip } from "../gfx/flip.js";
 import { Stage } from "./stage.js";
 import { Camera } from "./camera.js";
 import { ObjectManager } from "./objectmanager.js";
+import { TILE_HEIGHT, TILE_WIDTH } from "./tilesize.js";
 
 
 export class Game implements Scene {
@@ -34,6 +35,7 @@ export class Game implements Scene {
         
         this.objects.update(this.camera, this.stage, event);
         this.camera.update(event);
+        this.camera.restrict(this.stage.width*TILE_WIDTH, this.stage.height*TILE_HEIGHT);
     }
 
 

@@ -20,9 +20,7 @@ const enum CollisionBit {
     Left   = 0b1000,
 
     SpikeBottom = 0b10000,
-    SpikeTop    = 0b100000,
-    SpikeLeft   = 0b1000000,
-    SpikeRight  = 0b10000000,
+    StarBlock   = 0b100000
 }
 
 
@@ -137,6 +135,31 @@ export class Stage {
         if ((colID & CollisionBit.Right) != 0) {
 
             o.horizontalCollision(dx + TILE_WIDTH, dy + VERTICAL_OFFSET, TILE_HEIGHT - VERTICAL_OFFSET*2, -1, event);
+        }
+
+        // Star block
+        if ((colID & CollisionBit.StarBlock) != 0) {
+
+            if (o.verticalCollision(dx + HORIZONTAL_OFFSET, dy + TILE_HEIGHT, TILE_WIDTH - HORIZONTAL_OFFSET*2, -1, event)) {
+
+                // Have you ever noticed that in Mario you can never
+                // hit two question blocks at once? This is used to emulate
+                // that behavior
+                o.nudgeDown(0.5, event);
+
+                // "Disable" star block and update collisions
+                const index : number = y*this.width + x;
+                for (let i = 0; i < 2; ++ i) {
+
+                    const v : number = this.staticTiles[i][index];
+                    if (v == 68 || v == 69) {
+
+                        this.staticTiles[i][index] = v + 16;
+                        this.collisions[index] = 0b1111;
+                        break;
+                    }
+                }
+            }
         }
     }
 

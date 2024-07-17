@@ -31,7 +31,7 @@ export class Player extends CollisionObject {
 
     private control(event : ProgramEvent) : void {
 
-        const JUMP_TIME : number = 16.0;
+        const JUMP_TIME : number = 18.0;
         const WALK_SPEED : number = 1.5;
         const BASE_GRAVITY : number = 4.0;
 
@@ -100,6 +100,10 @@ export class Player extends CollisionObject {
 
             this.ledgeTimer = LEDGE_TIME;
             this.touchSurface = true;
+        }
+        else {
+
+            this.jumpTimer = 0;
         }
     }
 

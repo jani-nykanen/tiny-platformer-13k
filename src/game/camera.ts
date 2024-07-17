@@ -4,6 +4,7 @@ import { Canvas } from "../gfx/canvas.js";
 import { InputState } from "../core/inputstate.js";
 import { Rectangle } from "../math/rectangle.js";
 import { GameObject, updateSpeedAxis } from "./gameobject.js";
+import { clamp } from "../math/utility.js";
 
 
 export class Camera {
@@ -49,12 +50,15 @@ export class Camera {
         const HORIZONTAL_THRESHOLD : number = 16;
         const VERTICAL_THRESHOLD : number = 16;
 
+        const HORIZONTAL_CENTER_SHIFT : number = 0.33;
+        const VERTICAL_CENTER_SHIFT : number = 0.25;
+
         const X_OFFSET : number = 0;
         const Y_OFFSET : number = -16;
 
         const p : Vector = o.getPosition();
-        p.x -= this.width/2;
-        p.y -= this.height/2;
+        p.x -= this.width*HORIZONTAL_CENTER_SHIFT;
+        p.y -= this.height*VERTICAL_CENTER_SHIFT;
 
         const target : Vector = new Vector(p.x + X_OFFSET, p.y + Y_OFFSET);
         if (Math.abs(target.x - this.pos.x) > HORIZONTAL_THRESHOLD) {
@@ -83,6 +87,16 @@ export class Camera {
         this.pos.y = updateSpeedAxis(this.pos.y, 
             this.targetPos.y, 
             Math.round(Math.abs(this.pos.y - this.targetPos.y)/V_FACTOR)*event.tick);
+    }
+
+
+    public restrict(width : number, height : number) : void {
+
+        this.pos.x = clamp(this.pos.x, 0, width - this.cwidth);
+        this.pos.y = clamp(this.pos.y, 0, height - this.cheight);
+
+        this.targetPos.x = clamp(this.targetPos.x, 0, width - this.cwidth);
+        this.targetPos.y = clamp(this.targetPos.y, 0, height - this.cheight);
     }
 
 

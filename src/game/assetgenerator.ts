@@ -262,6 +262,8 @@ const generateMisc = (canvas : Canvas, bmpGameArt : Bitmap) : void => {
 
     const BRIDGE_YOFF : number = 13;
 
+    canvas.setFillColor("#000000");
+
     for (let i = 0; i < 2; ++ i) {
 
         // Bridge
@@ -272,9 +274,9 @@ const generateMisc = (canvas : Canvas, bmpGameArt : Bitmap) : void => {
         canvas.drawBitmap(bmpGameArt, Flip.None, 80 + i*8, 40, 16, 40, 8, 8);
         canvas.drawBitmap(bmpGameArt, Flip.None, 80 + i*8, 40, 16, 32, 8, 8);
 
-        // Spike tops
-        canvas.setFillColor("#000000");
+        // Spike tops & sides
         canvas.fillRect(84 + i*8, 39, 1, 1);
+        canvas.fillRect(96, 46, 1, 2);
     }
 }
 

@@ -98,6 +98,13 @@ export class CollisionObject extends GameObject {
     }
 
 
+    public nudgeDown(power : number, event : ProgramEvent) : void {
+
+        this.pos.y += power*event.tick;
+        this.speed.y = power;
+    }
+
+
     public getCollisionBox = () : Rectangle => this.collisionBox.clone();
     public doesTakeCollisions = () : boolean => this.takeCollisions;
 }
