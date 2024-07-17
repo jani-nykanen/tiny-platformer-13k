@@ -1,6 +1,6 @@
 JS_FILES := $(wildcard js/*.js) $(wildcard js/*/*.js) $(wildcard js/*/*/*.js)
 
-LEVEL_SRC_PATH := src/levels.ts
+LEVEL_SRC_PATH := src/game/leveldata.ts
 
 
 all: js
@@ -71,7 +71,5 @@ test_temp:
 
 .PHONY: levels
 levels:
-	echo "export const LEVEL_DATA : string[] = [" > $(LEVEL_SRC_PATH)
-	# TODO: Add a for loop here!
-	./scripts/mapconv.py ./levels/1.tmx >> $(LEVEL_SRC_PATH)
-	echo "];" >> $(LEVEL_SRC_PATH)
+	echo "export const LEVEL_DATA : {width : number, height : number, layers : number[][]} = " > $(LEVEL_SRC_PATH)
+	python3 ./tiled/convert.py  >> $(LEVEL_SRC_PATH)
