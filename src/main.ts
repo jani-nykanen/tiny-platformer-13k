@@ -16,7 +16,7 @@ const onloadEvent = (event : ProgramEvent) : void => {
     event.input.addAction("l", ["ArrowLeft"]);
     event.input.addAction("r", ["ArrowRight"]);
     event.input.addAction("j", ["Space", "KeyZ"]);
-    event.input.addAction("a", ["LeftControl", "KeyX"]);
+    event.input.addAction("a", ["ControlLeft", "KeyX"]);
 
     event.scenes.addScene("game", new Game(event), true);
 

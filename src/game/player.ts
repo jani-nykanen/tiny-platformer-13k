@@ -19,6 +19,9 @@ export class Player extends CollisionObject {
     private bodySprite : AnimatedSprite;
     private flip : Flip = Flip.None;
 
+    private attackTimer : number = 0;
+    private canAttack : boolean = true;
+
 
     constructor(x : number, y : number) {
 
@@ -37,12 +40,19 @@ export class Player extends CollisionObject {
 
     private control(event : ProgramEvent) : void {
 
+        const ATTACK_TIME : number = 15.0;
         const JUMP_TIME : number = 18.0;
         const WALK_SPEED : number = 1.5;
         const BASE_GRAVITY : number = 4.0;
 
-        let dirx : number = 0.0
+        if (this.attackTimer > 0) {
 
+            this.attackTimer -= event.tick;
+            return;
+        }
+
+        // Walking
+        let dirx : number = 0.0
         if ((event.input.getAction("l") & InputState.DownOrPressed) != 0) {
 
             dirx = -1;
@@ -57,6 +67,7 @@ export class Player extends CollisionObject {
         this.target.x = dirx*WALK_SPEED;
         this.target.y = BASE_GRAVITY;
 
+        // Jumping
         const jumpButton : InputState = event.input.getAction("j");
         if (jumpButton == InputState.Pressed && this.ledgeTimer > 0) {
 
@@ -66,6 +77,19 @@ export class Player extends CollisionObject {
         else if ((jumpButton & InputState.DownOrPressed) == 0) {
 
             this.jumpTimer = 0;
+        }
+
+        // Attacking
+        const attackButton : InputState = event.input.getAction("a");
+        if (this.canAttack && attackButton == InputState.Pressed) {
+
+            this.attackTimer = ATTACK_TIME;
+            this.jumpTimer = 0;
+
+            this.speed.zeros();
+            this.target.zeros();
+        
+            this.canAttack = false;
         }
     }
 
@@ -94,6 +118,12 @@ export class Player extends CollisionObject {
     private animate(event : ProgramEvent) : void {
 
         const EPS : number = 0.01;
+
+        if (this.attackTimer > 0) {
+
+            this.bodySprite.setFrame(7, 0);
+            return;
+        }
 
         if (!this.touchSurface) {
 
@@ -130,6 +160,7 @@ export class Player extends CollisionObject {
 
             this.ledgeTimer = LEDGE_TIME;
             this.touchSurface = true;
+            this.canAttack = true;
         }
         else {
 
@@ -145,5 +176,11 @@ export class Player extends CollisionObject {
 
         const bmpPlayer : Bitmap = canvas.assets.getBitmap("p");
         this.bodySprite.draw(canvas, bmpPlayer, dx, dy, this.flip);
+
+        if (this.attackTimer > 0) {
+            
+            const swordX : number = dx + 15 - 46*this.flip;
+            canvas.drawBitmap(bmpPlayer, this.flip, swordX, dy + 6, 128, 0, 32, 16);
+        }
     }
 }
