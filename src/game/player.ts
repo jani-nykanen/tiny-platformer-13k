@@ -4,8 +4,9 @@ import { Bitmap } from "../gfx/bitmap.js";
 import { Canvas } from "../gfx/canvas.js";
 import { Rectangle } from "../math/rectangle.js";
 import { Vector } from "../math/vector.js";
-import { Camera } from "./camera.js";
+import { AnimatedSprite } from "../gfx/animatedsprite.js";
 import { CollisionObject } from "./collisionobject.js";
+import { Flip } from "../gfx/flip.js";
 
 
 export class Player extends CollisionObject {
@@ -14,6 +15,9 @@ export class Player extends CollisionObject {
     private jumpTimer : number = 0.0;
     private ledgeTimer : number = 0.0;
     private touchSurface : boolean = true;
+
+    private bodySprite : AnimatedSprite;
+    private flip : Flip = Flip.None;
 
 
     constructor(x : number, y : number) {
@@ -26,6 +30,8 @@ export class Player extends CollisionObject {
         this.hitbox = new Rectangle(0, 0, 16, 16);
 
         this.inCamera = true;
+
+        this.bodySprite = new AnimatedSprite(16, 16);
     }
 
 
@@ -40,10 +46,12 @@ export class Player extends CollisionObject {
         if ((event.input.getAction("l") & InputState.DownOrPressed) != 0) {
 
             dirx = -1;
+            this.flip = Flip.Horizontal;
         }
         else if ((event.input.getAction("r") & InputState.DownOrPressed) != 0) {
 
             dirx = 1;
+            this.flip = Flip.None;
         }
 
         this.target.x = dirx*WALK_SPEED;
@@ -82,11 +90,33 @@ export class Player extends CollisionObject {
         this.jumpTimer -= event.tick;
     }
 
+    
+    private animate(event : ProgramEvent) : void {
+
+        const EPS : number = 0.01;
+
+        if (!this.touchSurface) {
+
+            this.bodySprite.setFrame(5 + Number(this.speed.y > 0), 0);
+            return;
+        }
+
+        if (Math.abs(this.target.x) < EPS && Math.abs(this.speed.x) < EPS) {
+
+            this.bodySprite.setFrame(0, 0);
+            return;
+        }
+
+        const speed : number = Math.max(0, 12 - Math.abs(this.speed.x)*4) | 0;
+        this.bodySprite.animate(0, 1, 4, speed, event.tick);
+    }
+
 
     protected updateEvent(event : ProgramEvent) : void {
         
         this.control(event);
         this.updateJumping(event);
+        this.animate(event);
 
         this.touchSurface = false;
     }
@@ -108,14 +138,12 @@ export class Player extends CollisionObject {
     }
 
 
-    public draw(canvas : Canvas, bmp? : Bitmap | undefined) : void {
+    public draw(canvas : Canvas) : void {
         
         const dx : number = Math.round(this.pos.x) - 8;
         const dy : number = Math.round(this.pos.y) - 7;
 
-        canvas.setFillColor("#000000");
-        canvas.fillRect(dx, dy, 16, 16);
-        canvas.setFillColor("#FF0000");
-        canvas.fillRect(dx + 1, dy + 1, 14, 14);
+        const bmpPlayer : Bitmap = canvas.assets.getBitmap("p");
+        this.bodySprite.draw(canvas, bmpPlayer, dx, dy, this.flip);
     }
 }

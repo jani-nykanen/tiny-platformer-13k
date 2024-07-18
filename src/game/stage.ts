@@ -75,7 +75,7 @@ export class Stage {
         const START_INDEX : number = 257;
 
         const index : number = y*this.width + x;
-        for (let colLayer = 0; colLayer < 3; ++ colLayer) {
+        for (let colLayer = 0; colLayer < 4; ++ colLayer) {
 
             const tileID : number = this.getTile(layer, x, y);
             if (tileID <= 0)

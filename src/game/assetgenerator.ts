@@ -40,6 +40,12 @@ const PALETTE_LOOKUP : string[] = [
     "b62400ff", // G Dark, orange-ish red
     "ff4900ff", // H Orange
     "ff9200ff", // I Brighter orange
+
+    // Player
+    "b6b6ffff", // J Purplish whatsoever
+
+    // Coin
+    "ffdb00ff", // K Yellow
 ];
 
 
@@ -57,6 +63,11 @@ const GAME_ART_PALETTE_TABLE : string[] = [
     "10HG", "10HG", "10HG", "10HG", "000I", "1IE2", "1IE2", "10HG",
     "10HG", "10HG", "10HG", "10HG", "10E2", "10E2", "10E2", "000I",
 
+    "10J2", "10J2", "10J2", "10J2", "10J2", "10J2", "10J2", "10J2",
+    "10J2", "10J2", "10J2", "10J2", "10J2", "10J2", "10J2", "10J2",
+
+    "10J2", "10J2", "1089", "0000", "107K", "10IK", "10IK", "10IK",
+    "10J2", "10J2", "1042", "1042", "10IK", "10IK", "10IK", "10IK"
 ];
 
 
@@ -296,10 +307,50 @@ const generateTileset = (assets : Assets) : void => {
 }
 
 
+const generatePlayer = (assets : Assets, bmpGameArt : Bitmap) : Bitmap => { 
+
+    const LEG_SX : number[] = [0, 16, 32, 48, 32, 16, 32, 0];
+    const LEG_SY : number[] = [72, 64, 64, 64, 64, 72, 72, 88];
+
+    const canvas : Canvas = new Canvas(160, 16, 80, 32, assets, false);
+
+    for (let i = 0; i < LEG_SX.length; ++ i) {
+
+        if (i < 6) {
+            // Heads
+            canvas.drawBitmap(bmpGameArt, Flip.None, i*16, 0, 0, 64, 16, 8);
+        }
+        // Legs
+        canvas.drawBitmap(bmpGameArt, Flip.None, i*16, 8, LEG_SX[i], LEG_SY[i], 16, 8);
+    }
+
+    // Special heads (takes less space than adding a lookup table for head (or not...?))
+    canvas.drawBitmap(bmpGameArt, Flip.None, 6*16, 0, 48, 72, 16, 8);
+    canvas.drawBitmap(bmpGameArt, Flip.None, 7*16, 0, 0, 80, 16, 8);
+
+    // Sword
+    for (let i = 0; i < 2; ++ i) {
+
+        canvas.drawBitmap(bmpGameArt, Flip.None, 8*16 + i*2, 0, 16, 80 + i*8, 8 + i*8, 8);
+    }
+
+    return canvas.toBitmap();
+}
+
+
+const generateSprites = (assets : Assets) : void => {
+
+    const bmpGameArt : Bitmap = assets.getBitmap("g");
+
+    assets.addBitmap("p", generatePlayer(assets, bmpGameArt));
+}
+
+
 // Hmm, generating assets from assets...
 export const generateAssets = (assets : Assets) : void => {
 
     generateFonts(assets);
     generateGameArt(assets);
     generateTileset(assets);
+    generateSprites(assets);
 }

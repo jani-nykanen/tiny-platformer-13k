@@ -44,14 +44,13 @@ export class Game implements Scene {
         canvas.moveTo();
         canvas.clear("#55AAFF");
 
-        /*
-        const bmpGameArt : Bitmap = canvas.assets.getBitmap("g");
-        canvas.drawBitmap(bmpGameArt, Flip.None, 8, 8);
-
-        const bmpTileset : Bitmap = canvas.assets.getBitmap("ts");
-        canvas.drawBitmap(bmpTileset, Flip.None, 96, 8);
-        */
-
+        // const bmpGameArt : Bitmap = canvas.assets.getBitmap("g");
+        // canvas.drawBitmap(bmpGameArt, Flip.None, 8, 8);
+        // const bmpTileset : Bitmap = canvas.assets.getBitmap("ts");
+        // canvas.drawBitmap(bmpTileset, Flip.None, 96, 8);
+        // const bmpPlayer : Bitmap = canvas.assets.getBitmap("p");
+        // canvas.drawBitmap(bmpPlayer, Flip.None, 128, 8);
+        
         this.camera.apply(canvas);
         this.stage.drawLayers(canvas, this.camera);
         this.objects.draw(canvas);
