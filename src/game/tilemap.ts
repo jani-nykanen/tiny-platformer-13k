@@ -40,7 +40,7 @@ export class Tilemap {
 
 
     public cloneLayer = (layer : number, cutoff? : number) : number[] | undefined => Array.from(
-        this.layers[layer].filter((v : number) => cutoff === undefined ? true : v < cutoff)
+        this.layers[layer].filter((v : number) => cutoff === undefined ? true : v <= cutoff)
     );
 
 

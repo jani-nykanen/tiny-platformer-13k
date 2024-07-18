@@ -32,9 +32,9 @@ export class Program {
         this.assets = new Assets();
 
         this.canvas = new Canvas(
-            canvasMinWidth, canvasMaxWidth,
-            canvasMinHeight, canvasMaxHeight,
-            this.assets);
+            canvasMinWidth, canvasMinHeight,
+            canvasMaxWidth, canvasMaxHeight,
+            this.assets, true);
         this.event = new ProgramEvent(this.input, this.scenes, this.assets, this.canvas); 
     }
 

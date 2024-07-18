@@ -169,12 +169,23 @@ export class Player extends CollisionObject {
     }
 
 
+    public coinCollision(x : number, y : number, radius : number, event : ProgramEvent) : boolean {
+
+        if (!this.exist || this.dying) {
+
+            return false;
+        }
+
+        return Rectangle.overlay(this.hitbox, new Rectangle(x, y, radius*2, radius*2), this.pos);
+    }
+
+
     public draw(canvas : Canvas) : void {
         
         const dx : number = this.pos.x - 8;
         const dy : number = this.pos.y - 7;
 
-        const bmpPlayer : Bitmap = canvas.assets.getBitmap("p");
+        const bmpPlayer : Bitmap = canvas.assets?.getBitmap("p");
         this.bodySprite.draw(canvas, bmpPlayer, dx, dy, this.flip);
 
         if (this.attackTimer > 0) {

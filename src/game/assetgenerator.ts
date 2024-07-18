@@ -295,7 +295,7 @@ const generateMisc = (canvas : Canvas, bmpGameArt : Bitmap) : void => {
 const generateTileset = (assets : Assets) : void => {
 
     const bmpGameArt : Bitmap = assets.getBitmap("g");
-    const canvas : Canvas = new Canvas(256, 256, 256, 256, assets, false);
+    const canvas : Canvas = new Canvas(256, 256);
 
     generateSoilTilesAndBridge(canvas, bmpGameArt);
     generateBlocks(canvas, bmpGameArt);
@@ -312,7 +312,7 @@ const generatePlayer = (assets : Assets, bmpGameArt : Bitmap) : Bitmap => {
     const LEG_SX : number[] = [0, 16, 32, 48, 32, 16, 32, 0];
     const LEG_SY : number[] = [72, 64, 64, 64, 64, 72, 72, 88];
 
-    const canvas : Canvas = new Canvas(160, 16, 80, 32, assets, false);
+    const canvas : Canvas = new Canvas(160, 32);
 
     for (let i = 0; i < LEG_SX.length; ++ i) {
 
@@ -338,11 +338,62 @@ const generatePlayer = (assets : Assets, bmpGameArt : Bitmap) : Bitmap => {
 }
 
 
+const generateCoin = (assets : Assets, bmpGameArt : Bitmap) : Bitmap => {
+
+    const canvas : Canvas = new Canvas(64, 16);
+
+    canvas.drawBitmap(bmpGameArt, Flip.None, 0, 0, 32, 80, 16, 16);
+    canvas.drawBitmap(bmpGameArt, Flip.None, 19, 0, 48, 80, 10, 16);
+    canvas.drawBitmap(bmpGameArt, Flip.None, 37, 0, 58, 80, 6, 16);
+    canvas.drawBitmap(bmpGameArt, Flip.Horizontal, 51, 0, 48, 80, 10, 16);
+
+    return canvas.toBitmap();
+}
+
+
 const generateSprites = (assets : Assets) : void => {
 
     const bmpGameArt : Bitmap = assets.getBitmap("g");
 
     assets.addBitmap("p", generatePlayer(assets, bmpGameArt));
+    assets.addBitmap("c", generateCoin(assets, bmpGameArt));
+}
+
+
+const generateCloudLayer = (color : string, width : number, height : number, 
+    amplitude : number, period : number, sineFactor : number) : Bitmap => {
+
+    const canvas : Canvas = new Canvas(width, height);
+
+    canvas.setFillColor(color);
+    for (let x = 0; x < width; ++ x) {
+
+        const t : number = ((x % period) - period/2)/(period/2 + 2);
+        const s : number = x/width*Math.PI*2;
+        const dy = (1.0 - Math.sqrt(1.0 - t*t) + (1.0 + Math.sin(s))*sineFactor)*amplitude;
+
+        canvas.fillRect(x, dy, 1, height - dy + 1);
+    }
+
+    return canvas.toBitmap();
+}
+
+
+const generateClouds = (assets : Assets) : void => {
+
+    const AMPLITUDE : number = 16;
+    const PERIOD : number = 24;
+    const WIDTH : number = 240;
+    const HEIGHT : number = 96;
+    const SINE_FACTOR : number = 1.5;
+
+    const COLORS : string[] = ["#ffffff", "#b6b6ff", "#6d6db6"];
+
+    for (let i = 0; i < COLORS.length; ++ i) {
+
+        assets.addBitmap("c" + String(i + 1), 
+            generateCloudLayer(COLORS[i], WIDTH, HEIGHT, AMPLITUDE, PERIOD, SINE_FACTOR));
+    }
 }
 
 
@@ -353,4 +404,5 @@ export const generateAssets = (assets : Assets) : void => {
     generateGameArt(assets);
     generateTileset(assets);
     generateSprites(assets);
+    generateClouds(assets);
 }

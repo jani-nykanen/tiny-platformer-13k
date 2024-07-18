@@ -8,6 +8,7 @@ import { Flip } from "../gfx/flip.js";
 import { CollisionObject } from "./collisionobject.js";
 import { ProgramEvent } from "../core/event.js";
 import { Vector } from "../math/vector.js";
+import { AnimatedSprite } from "../gfx/animatedsprite.js";
 
 
 const BUMP_TIME : number = 6.0;
@@ -23,7 +24,8 @@ const enum CollisionBit {
     Left   = 0b1000,
 
     SpikeBottom = 0b10000,
-    StarBlock   = 0b100000
+    StarBlock   = 0b100000,
+    Coin        = 0b1000000
 }
 
 
@@ -38,6 +40,8 @@ export class Stage {
 
     private bumpTimer : number = 0;
     private bumpPos : Vector;
+
+    private sprCoin : AnimatedSprite;
 
     public readonly width : number;
     public readonly height : number;
@@ -63,6 +67,8 @@ export class Stage {
         this.createCollisionTiles();
 
         this.bumpPos = new Vector();
+
+        this.sprCoin = new AnimatedSprite(16, 16);
     }
 
 
@@ -119,9 +125,12 @@ export class Stage {
 
         const HORIZONTAL_OFFSET : number = 1;
         const VERTICAL_OFFSET : number = 1;
+        const COIN_RADIUS : number = 4;
 
         const dx : number = x*TILE_WIDTH;
         const dy : number = y*TILE_HEIGHT;
+
+        const index : number = y*this.width + x;
 
         // Floor
         if ((colID & CollisionBit.Top) != 0) {
@@ -155,22 +164,46 @@ export class Stage {
                 o.nudgeDown(0.5, event);
 
                 // "Disable" star block and update collisions
-                const index : number = y*this.width + x;
-                for (let i = 0; i < 2; ++ i) {
-
-                    const v : number = this.staticTiles[i][index];
-                    if (v == 68 || v == 69) {
-
-                        this.staticTiles[i][index] = v + 16;
-                        this.collisions[index] = 0b1111;
-                        break;
-                    }
-                }
-
+                // To safe space we make an ugly assumption that
+                // all the blocks are in bottom layer
+                this.staticTiles[0][index] = this.staticTiles[0][index] + 16;
+                this.staticTiles[1][index - this.width] = 128;
+                this.collisions[index - this.width] = CollisionBit.Coin;
+                this.collisions[index] = 0b1111;
+ 
                 this.bumpPos.x = x;
                 this.bumpPos.y = y;
                 this.bumpTimer = BUMP_TIME;
             }
+        }
+
+        // Coin
+        if ((colID & CollisionBit.Coin) != 0) {
+
+            if (o.coinCollision?.((x + 0.5)*TILE_WIDTH, (y + 0.5)*TILE_HEIGHT, COIN_RADIUS, event) ?? false) {
+
+                // And here we assume that all the coins are in the top layer
+                this.staticTiles[1][index] = 0;
+                this.collisions[index] = 0;
+            }
+        }
+    }
+
+
+    private drawSpecialTile(canvas : Canvas, x : number, y : number, tileID : number) : void {
+
+        switch (tileID) {
+
+        // Coin
+        case 128: {
+
+                const bmpCoin : Bitmap = canvas.assets?.getBitmap("c");
+                this.sprCoin.draw(canvas, bmpCoin, x*TILE_WIDTH, y*TILE_HEIGHT);
+            }
+            break;
+
+        default:
+            break;
         }
     }
 
@@ -181,15 +214,35 @@ export class Stage {
 
             this.bumpTimer -= event.tick;
         }
+
+        this.sprCoin.animate(0, 0, 3, 8, event.tick);
+    }
+
+
+    public drawBackground(canvas : Canvas, camera : Camera) : void {
+
+        canvas.clear("#b6b6ff");
+
+        const bmpClouds : Bitmap[] = [1, 2, 3].map(i => canvas.assets?.getBitmap("c" + String(i)));
+        const width : number = bmpClouds[0]?.width ?? 256;
+        const height : number = bmpClouds[0]?.height ?? 128;
+
+        const repeat : number = (canvas.width/width) + 2;
+
+        for (let i = -1; i < repeat - 1; ++ i) {
+
+            canvas.drawBitmap(bmpClouds[0], Flip.None, i*width, canvas.height - height);
+        }
     }
 
 
     public drawLayers(canvas : Canvas, camera : Camera) : void {
 
+        const SPECIAL_TILE_MIN = 112;
         const BUMP_AMPLITUDE : number = 2;
         const CAMERA_MARGIN : number = 1;
 
-        const bmpTileset : Bitmap = canvas.assets.getBitmap("ts");
+        const bmpTileset : Bitmap = canvas.assets?.getBitmap("ts");
 
         const startx : number = ((camera.left/TILE_WIDTH) | 0) - CAMERA_MARGIN;
         const starty : number = ((camera.top/TILE_HEIGHT) | 0) - CAMERA_MARGIN;
@@ -207,6 +260,11 @@ export class Stage {
                     if (tileID == 0) {
 
                         continue;
+                    }
+
+                    if (tileID >= SPECIAL_TILE_MIN) {
+
+                        this.drawSpecialTile(canvas, x, y, tileID);
                     }
 
                     const sx : number = (tileID - 1) % 16;

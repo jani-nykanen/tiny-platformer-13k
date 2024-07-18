@@ -21,10 +21,10 @@ export class Rectangle {
     static overlay(r1 : Rectangle, r2 : Rectangle, 
         shift1 : Vector = new Vector(), shift2 : Vector = new Vector()) : boolean {
 
-        return r1.x + r1.w + shift1.x >= r2.x + shift2.x &&
-               r1.x + shift1.x <= r2.x + shift2.x + r2.w &&
-               r1.y + r1.h + shift1.y >= r2.y + shift2.y &&
-               r1.y + shift1.y <= r2.y + shift2.y + r2.h; 
+        return r1.x + r1.w/2 + shift1.x >= r2.x - r2.w/2 + shift2.x &&
+               r1.x - r1.w/2 + shift1.x <= r2.x + r2.w/2 + shift2.x &&
+               r1.y + r1.h/2 + shift1.y >= r2.y - r2.h/2 + shift2.y &&
+               r1.y - r1.h/2 + shift1.y <= r2.y + r2.h/2 + shift2.y; 
     }
 
 

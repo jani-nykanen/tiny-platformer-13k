@@ -22,6 +22,9 @@ export class CollisionObject extends GameObject {
     protected horizontalCollisionEvent?(direction : -1 | 1, event : ProgramEvent) : void;
 
 
+    public coinCollision?(x : number, y : number, radius : number, event : ProgramEvent) : boolean;
+
+
     public verticalCollision(x : number, y : number, 
         width : number, direction : -1 | 1, event : ProgramEvent) : boolean {
 

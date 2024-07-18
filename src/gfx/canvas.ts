@@ -27,12 +27,13 @@ export class Canvas {
         return this.canvas.height;
     }
 
-    public readonly assets : Assets;
+    public readonly assets : Assets | undefined;
 
 
-    constructor(minWidth : number, maxWidth : number,
-        minHeight : number, maxHeight : number,
-        assets : Assets, embed : boolean = true) {
+    constructor(minWidth : number, minHeight : number, 
+        maxWidth : number = minWidth, maxHeight : number = minHeight,
+        assets : Assets | undefined = undefined,
+        embed : boolean = false) {
 
         this.minWidth = minWidth;
         this.maxWidth = maxWidth;
