@@ -10,6 +10,9 @@ import { ProgramEvent } from "../core/event.js";
 import { Vector } from "../math/vector.js";
 
 
+const BUMP_TIME : number = 6.0;
+
+
 const enum CollisionBit {
 
     None = 0,
@@ -24,7 +27,6 @@ const enum CollisionBit {
 }
 
 
-
 export class Stage {
 
 
@@ -33,6 +35,9 @@ export class Stage {
 
     private staticTiles : number[][];
     private collisions : number[];
+
+    private bumpTimer : number = 0;
+    private bumpPos : Vector;
 
     public readonly width : number;
     public readonly height : number;
@@ -56,6 +61,8 @@ export class Stage {
 
         this.collisions = new Array<number> (this.width*this.height);
         this.createCollisionTiles();
+
+        this.bumpPos = new Vector();
     }
 
 
@@ -159,13 +166,27 @@ export class Stage {
                         break;
                     }
                 }
+
+                this.bumpPos.x = x;
+                this.bumpPos.y = y;
+                this.bumpTimer = BUMP_TIME;
             }
+        }
+    }
+
+
+    public update(event : ProgramEvent) : void {
+
+        if (this.bumpTimer > 0) {
+
+            this.bumpTimer -= event.tick;
         }
     }
 
 
     public drawLayers(canvas : Canvas, camera : Camera) : void {
 
+        const BUMP_AMPLITUDE : number = 2;
         const CAMERA_MARGIN : number = 1;
 
         const bmpTileset : Bitmap = canvas.assets.getBitmap("ts");
@@ -191,8 +212,14 @@ export class Stage {
                     const sx : number = (tileID - 1) % 16;
                     const sy : number = ((tileID - 1)/16) | 0;
 
+                    let shifty : number = 0;
+                    if (this.bumpTimer > 0 && this.bumpPos.x == x && this.bumpPos.y == y) {
+
+                        shifty = -Math.round(Math.sin(this.bumpTimer/BUMP_TIME*Math.PI)*BUMP_AMPLITUDE);
+                    }
+
                     canvas.drawBitmap(bmpTileset, Flip.None, 
-                        x*TILE_WIDTH, y*TILE_HEIGHT, 
+                        x*TILE_WIDTH, y*TILE_HEIGHT + shifty, 
                         sx*TILE_WIDTH, sy*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
                 }
             }

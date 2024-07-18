@@ -83,10 +83,10 @@ export class Camera {
 
         this.pos.x = updateSpeedAxis(this.pos.x, 
             this.targetPos.x, 
-            Math.round(Math.abs(this.pos.x - this.targetPos.x)/H_FACTOR)*event.tick);
+            (Math.abs(this.pos.x - this.targetPos.x)/H_FACTOR)*event.tick);
         this.pos.y = updateSpeedAxis(this.pos.y, 
             this.targetPos.y, 
-            Math.round(Math.abs(this.pos.y - this.targetPos.y)/V_FACTOR)*event.tick);
+            (Math.abs(this.pos.y - this.targetPos.y)/V_FACTOR)*event.tick);
     }
 
 
@@ -109,6 +109,6 @@ export class Camera {
     public apply(canvas : Canvas) : void {
 
         // TODO: round vs floor?
-        canvas.moveTo(-Math.floor(this.pos.x), -Math.floor(this.pos.y));
+        canvas.moveTo(-(this.pos.x), -(this.pos.y));
     }
 }

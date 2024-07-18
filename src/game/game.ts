@@ -32,8 +32,9 @@ export class Game implements Scene {
 
 
     public update(event : ProgramEvent) : void {
-        
-        this.objects.update(this.camera, this.stage, event);
+
+        this.stage.update(event);
+        this.objects.update(this.camera, this.stage, event);    
         this.camera.update(event);
         this.camera.restrict(this.stage.width*TILE_WIDTH, this.stage.height*TILE_HEIGHT);
     }

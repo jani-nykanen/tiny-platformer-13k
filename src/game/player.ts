@@ -140,8 +140,8 @@ export class Player extends CollisionObject {
 
     public draw(canvas : Canvas) : void {
         
-        const dx : number = Math.round(this.pos.x) - 8;
-        const dy : number = Math.round(this.pos.y) - 7;
+        const dx : number = this.pos.x - 8;
+        const dy : number = this.pos.y - 7;
 
         const bmpPlayer : Bitmap = canvas.assets.getBitmap("p");
         this.bodySprite.draw(canvas, bmpPlayer, dx, dy, this.flip);
