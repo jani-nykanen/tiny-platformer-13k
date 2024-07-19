@@ -81,6 +81,16 @@ export class Camera {
         this.cwidth = event.screenWidth;
         this.cheight = event.screenHeight;
 
+        // Reduces "flickering"
+        if (Math.abs(this.pos.x - this.targetPos.x) <= 1) {
+
+            this.targetPos.x = this.pos.x;
+        }
+        if (Math.abs(this.pos.y - this.targetPos.y) <= 1) {
+
+            this.targetPos.y = this.pos.y;
+        }
+
         this.pos.x = updateSpeedAxis(this.pos.x, 
             this.targetPos.x, 
             (Math.abs(this.pos.x - this.targetPos.x)/H_FACTOR)*event.tick);

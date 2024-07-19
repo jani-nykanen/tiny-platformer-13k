@@ -44,6 +44,7 @@ export class Stage {
     private sprCoin : AnimatedSprite;
     
     private cloudPositions : number[];
+    private waterWave : number = 0.0;
 
     public readonly width : number;
     public readonly height : number;
@@ -196,7 +197,28 @@ export class Stage {
 
     private drawSpecialTile(canvas : Canvas, x : number, y : number, tileID : number) : void {
 
+        const WATER_WAVE_HEIGHT : number = 2.0;
+
+        const waveFunction : (t : number) => number = t => 
+            Math.round(Math.sin(this.waterWave + 
+                (Math.PI*2)/32*t)*WATER_WAVE_HEIGHT + 
+                Math.sin(Math.PI/8*t));
+
         switch (tileID) {
+
+        // Lava
+        case 127: {
+
+            const bmpGameArt : Bitmap = canvas.assets.getBitmap("g");
+            for (let dx = 0; dx < 32; ++ dx) {
+
+                canvas.drawBitmap(bmpGameArt, Flip.None, 
+                    x*TILE_WIDTH + dx, y*TILE_HEIGHT + WATER_WAVE_HEIGHT + 1 + waveFunction(dx), 
+                    56 + (x % 8), 32, 1, 16);
+            }
+            }
+            break;
+        
 
         // Coin
         case 128: {
@@ -215,6 +237,7 @@ export class Stage {
     public update(event : ProgramEvent) : void {
 
         const CLOUD_SPEEDS : number[] = [0.25, 0.5, 1.0];
+        const WAVE_SPEED : number = Math.PI*2/60.0;
 
         if (this.bumpTimer > 0) {
 
@@ -228,6 +251,8 @@ export class Stage {
 
             this.cloudPositions[i] = (this.cloudPositions[i] + CLOUD_SPEEDS[i]*event.tick) % cloudWidth;
         }
+
+        this.waterWave = (this.waterWave + WAVE_SPEED*event.tick) % (Math.PI*2);
     }
 
 
@@ -237,11 +262,11 @@ export class Stage {
         const CLOUD_LAYER_OFFSET_Y : number = 32;
 
         // Sky
-        canvas.clear("#004992");
+        canvas.clear("#dbdbff");
 
         // Moon
         const bmpMoon : Bitmap = canvas.assets.getBitmap("m");
-        canvas.drawBitmap(bmpMoon, Flip.None, canvas.width - 88, 16);
+        canvas.drawBitmap(bmpMoon, Flip.None, canvas.width - 100, 16);
 
         // Clouds
         const bmpClouds : Bitmap[] = [1, 2, 3].map(i => canvas.assets?.getBitmap("c" + String(i)));

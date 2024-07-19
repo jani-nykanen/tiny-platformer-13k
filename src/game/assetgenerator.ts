@@ -46,6 +46,10 @@ const PALETTE_LOOKUP : string[] = [
 
     // Coin
     "ffdb00ff", // K Yellow
+
+    // Lava
+    "ffb600ff", // L Different kind of yellow
+    "ff6d00ff", // M Different kind of orange
 ];
 
 
@@ -57,10 +61,10 @@ const GAME_ART_PALETTE_TABLE : string[] = [
     "1032", "1031", "1032", "0057", "0057", "1068", "1068", "1089",
     "1032", "1031", "B002", "8057", "8057", "7095", "7005", "1098",
 
-    "10BD", "10BD", "0002", "10FE", "10FE", "1007", "1007", "1403", 
-    "10BD", "10BD", "1043", "10FE", "10FE", "1007", "1007", "1403", 
+    "10BD", "10BD", "0002", "10FE", "10FE", "1007", "1007", "G7LM", 
+    "10BD", "10BD", "1043", "10FE", "10FE", "1007", "1007", "G7LM", 
 
-    "10HG", "10HG", "10HG", "10HG", "000I", "1IE2", "1IE2", "10HG",
+    "10HG", "10HG", "10HG", "10HG", "000I", "1IE2", "1IE2", "0000",
     "10HG", "10HG", "10HG", "10HG", "10E2", "10E2", "10E2", "000I",
 
     "10J2", "10J2", "10J2", "10J2", "10J2", "10J2", "10J2", "10J2",
@@ -387,7 +391,7 @@ const generateClouds = (assets : Assets) : void => {
     const HEIGHT : number = 96;
     const SINE_FACTOR : number = 1.5;
 
-    const COLORS : string[] = ["#dbffff", "#92dbff", "#4992db"];
+    const COLORS : string[] = ["#ffffff", "#b8b8f2", "#9191da"];
 
     for (let i = 0; i < COLORS.length; ++ i) {
 
@@ -399,16 +403,18 @@ const generateClouds = (assets : Assets) : void => {
 
 const generateMoon = (assets : Assets) : void => {
 
-    const WIDTH : number = 64;
-    const HEIGHT : number = 64;
+    const RADIUS : number = 40;
 
-    const canvas : Canvas = new Canvas(WIDTH, HEIGHT);
+    const canvas : Canvas = new Canvas(RADIUS*2, RADIUS*2);
 
     canvas.setFillColor("#ffb649");
-    canvas.fillCircle(WIDTH/2, HEIGHT/2, WIDTH/2 - 2);
+    canvas.fillCircle(RADIUS, RADIUS, RADIUS);
 
     canvas.setFillColor("#ffffb6");
-    canvas.fillCircle(WIDTH/2 - 2, HEIGHT/2 - 2, WIDTH/2 - 2 - 2);
+    canvas.fillCircle(RADIUS - 2, RADIUS - 2, RADIUS - 2);
+
+    canvas.setFillColor("#dbdbff");
+    canvas.fillCircle(RADIUS - RADIUS/2, RADIUS - RADIUS/4, RADIUS - 8);
 
     assets.addBitmap("m", canvas.toBitmap());
 }
