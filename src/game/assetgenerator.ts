@@ -370,7 +370,7 @@ const generateCloudLayer = (color : string, width : number, height : number,
 
         const t : number = ((x % period) - period/2)/(period/2 + 2);
         const s : number = x/width*Math.PI*2;
-        const dy = (1.0 - Math.sqrt(1.0 - t*t) + (1.0 + Math.sin(s))*sineFactor)*amplitude;
+        const dy = 1 + (1.0 - Math.sqrt(1.0 - t*t) + (1.0 + Math.sin(s))*sineFactor)*amplitude;
 
         canvas.fillRect(x, dy, 1, height - dy + 1);
     }
@@ -387,13 +387,30 @@ const generateClouds = (assets : Assets) : void => {
     const HEIGHT : number = 96;
     const SINE_FACTOR : number = 1.5;
 
-    const COLORS : string[] = ["#ffffff", "#b6b6ff", "#6d6db6"];
+    const COLORS : string[] = ["#dbffff", "#92dbff", "#4992db"];
 
     for (let i = 0; i < COLORS.length; ++ i) {
 
         assets.addBitmap("c" + String(i + 1), 
             generateCloudLayer(COLORS[i], WIDTH, HEIGHT, AMPLITUDE, PERIOD, SINE_FACTOR));
     }
+}
+
+
+const generateMoon = (assets : Assets) : void => {
+
+    const WIDTH : number = 64;
+    const HEIGHT : number = 64;
+
+    const canvas : Canvas = new Canvas(WIDTH, HEIGHT);
+
+    canvas.setFillColor("#ffb649");
+    canvas.fillCircle(WIDTH/2, HEIGHT/2, WIDTH/2 - 2);
+
+    canvas.setFillColor("#ffffb6");
+    canvas.fillCircle(WIDTH/2 - 2, HEIGHT/2 - 2, WIDTH/2 - 2 - 2);
+
+    assets.addBitmap("m", canvas.toBitmap());
 }
 
 
@@ -405,4 +422,5 @@ export const generateAssets = (assets : Assets) : void => {
     generateTileset(assets);
     generateSprites(assets);
     generateClouds(assets);
+    generateMoon(assets);
 }

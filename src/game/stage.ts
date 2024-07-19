@@ -42,6 +42,8 @@ export class Stage {
     private bumpPos : Vector;
 
     private sprCoin : AnimatedSprite;
+    
+    private cloudPositions : number[];
 
     public readonly width : number;
     public readonly height : number;
@@ -69,6 +71,8 @@ export class Stage {
         this.bumpPos = new Vector();
 
         this.sprCoin = new AnimatedSprite(16, 16);
+
+        this.cloudPositions = [0, 80, 160];
     }
 
 
@@ -210,28 +214,54 @@ export class Stage {
 
     public update(event : ProgramEvent) : void {
 
+        const CLOUD_SPEEDS : number[] = [0.25, 0.5, 1.0];
+
         if (this.bumpTimer > 0) {
 
             this.bumpTimer -= event.tick;
         }
 
         this.sprCoin.animate(0, 0, 3, 8, event.tick);
+
+        const cloudWidth : number = (event.assets.getBitmap("c1")?.width) ?? 240;
+        for (let i = 0; i < this.cloudPositions.length; ++ i) {
+
+            this.cloudPositions[i] = (this.cloudPositions[i] + CLOUD_SPEEDS[i]*event.tick) % cloudWidth;
+        }
     }
 
 
     public drawBackground(canvas : Canvas, camera : Camera) : void {
 
-        canvas.clear("#b6b6ff");
+        const CLOUD_BASE_OFFSET_Y : number = 48;
+        const CLOUD_LAYER_OFFSET_Y : number = 32;
 
+        // Sky
+        canvas.clear("#004992");
+
+        // Moon
+        const bmpMoon : Bitmap = canvas.assets.getBitmap("m");
+        canvas.drawBitmap(bmpMoon, Flip.None, canvas.width - 88, 16);
+
+        // Clouds
         const bmpClouds : Bitmap[] = [1, 2, 3].map(i => canvas.assets?.getBitmap("c" + String(i)));
         const width : number = bmpClouds[0]?.width ?? 256;
         const height : number = bmpClouds[0]?.height ?? 128;
 
-        const repeat : number = (canvas.width/width) + 2;
+        const repeat : number = (canvas.width/width) + 3;
 
-        for (let i = -1; i < repeat - 1; ++ i) {
+        for (let j = 0; j < 3; ++ j) {
 
-            canvas.drawBitmap(bmpClouds[0], Flip.None, i*width, canvas.height - height);
+            const camShiftX : number = -((camera.left/((3 - j)*2)) % width);
+            const camShiftY : number = -(camera.top/((3 - j)*2));
+
+            const shiftx : number = -this.cloudPositions[j] + camShiftX;
+            const shifty : number = CLOUD_BASE_OFFSET_Y - (2 - j)*CLOUD_LAYER_OFFSET_Y + camShiftY;
+
+            for (let i = -1; i < repeat - 1; ++ i) {
+
+                canvas.drawBitmap(bmpClouds[2 - j], Flip.None, i*width + shiftx, canvas.height - height + shifty);
+            }
         }
     }
 
