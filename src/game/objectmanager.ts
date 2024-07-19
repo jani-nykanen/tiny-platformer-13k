@@ -3,17 +3,18 @@ import { Canvas } from "../gfx/canvas.js";
 import { Camera } from "./camera.js";
 import { Player } from "./player.js";
 import { Stage } from "./stage.js";
+import { TILE_HEIGHT } from "./tilesize.js";
 
 
 export class ObjectManager {
 
 
-    private player : Player;
+    public readonly player : Player;
 
 
     constructor() {
 
-        this.player = new Player(64, 128);
+        this.player = new Player(32, 13*TILE_HEIGHT + TILE_HEIGHT/2);
     }
 
 

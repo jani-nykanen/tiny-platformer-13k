@@ -9,6 +9,10 @@ import { CollisionObject } from "./collisionobject.js";
 import { Flip } from "../gfx/flip.js";
 
 
+const HURT_TIME : number = 60;
+const HURT_KNOCKBACK_TIME : number = 20;
+
+
 export class Player extends CollisionObject {
 
 
@@ -21,6 +25,11 @@ export class Player extends CollisionObject {
 
     private attackTimer : number = 0;
     private canAttack : boolean = true;
+
+    private hurtTimer : number = 0;
+    private health : number = 3;
+
+    public readonly maxHealth : number = 3;
 
 
     constructor(x : number, y : number) {
@@ -51,8 +60,14 @@ export class Player extends CollisionObject {
             return;
         }
 
+        this.target.y = BASE_GRAVITY;
+        if (this.hurtTimer > HURT_TIME) {
+
+            return;
+        }
+
         // Walking
-        let dirx : number = 0.0
+        let dirx : number = 0.0;
         if ((event.input.getAction("l") & InputState.DownOrPressed) != 0) {
 
             dirx = -1;
@@ -63,9 +78,7 @@ export class Player extends CollisionObject {
             dirx = 1;
             this.flip = Flip.None;
         }
-
         this.target.x = dirx*WALK_SPEED;
-        this.target.y = BASE_GRAVITY;
 
         // Jumping
         const jumpButton : InputState = event.input.getAction("j");
@@ -114,10 +127,26 @@ export class Player extends CollisionObject {
         this.jumpTimer -= event.tick;
     }
 
+
+    private updateHurt(event : ProgramEvent) : void {
+
+        if (this.hurtTimer <= 0) {
+
+            return;
+        }
+        this.hurtTimer -= event.tick;
+    }
+
     
     private animate(event : ProgramEvent) : void {
 
         const EPS : number = 0.01;
+
+        if (this.hurtTimer > HURT_TIME) {
+
+            this.bodySprite.setFrame(10, 0);
+            return;
+        }
 
         if (this.attackTimer > 0) {
 
@@ -147,6 +176,7 @@ export class Player extends CollisionObject {
         this.control(event);
         this.updateJumping(event);
         this.animate(event);
+        this.updateHurt(event);
 
         this.touchSurface = false;
     }
@@ -169,6 +199,25 @@ export class Player extends CollisionObject {
     }
 
 
+    public hurt(dir : -1 | 1, event : ProgramEvent) : void {
+
+        const KNOCKBACK_SPEED : number = 3.0;
+
+        if (this.hurtTimer > 0) {
+
+            return;
+        }
+        this.hurtTimer = HURT_TIME + HURT_KNOCKBACK_TIME;
+        this.speed.x = dir*KNOCKBACK_SPEED;
+        this.target.x = 0.0;
+
+        this.attackTimer = 0;
+        this.jumpTimer = 0;
+
+        -- this.health;
+    }
+
+
     public coinCollision(x : number, y : number, radius : number, event : ProgramEvent) : boolean {
 
         if (!this.exist || this.dying) {
@@ -180,8 +229,31 @@ export class Player extends CollisionObject {
     }
 
 
-    public draw(canvas : Canvas) : void {
+    public hurtCollision(x : number, y : number, w : number, h : number, event : ProgramEvent) : boolean {
         
+        if (!this.exist || this.dying || this.hurtTimer > 0) {
+
+            return false;
+        }
+
+        const dx : number = x + w/2;
+        if (Rectangle.overlay(this.hitbox, new Rectangle(dx, y + h/2, w, h), this.pos)) {
+
+            this.hurt(dx > this.pos.x ? -1 : 1, event);
+            return true;
+        }
+        return false;
+    }
+
+
+    public draw(canvas : Canvas) : void {
+
+        if (this.hurtTimer > 0 && this.hurtTimer <= HURT_TIME &&
+            ((this.hurtTimer/2) | 0) % 2 != 0) {
+
+            return;
+        }
+
         const dx : number = this.pos.x - 8;
         const dy : number = this.pos.y - 7;
 
@@ -194,4 +266,7 @@ export class Player extends CollisionObject {
             canvas.drawBitmap(bmpPlayer, this.flip, swordX, dy + 6, 128, 0, 32, 16);
         }
     }
+
+
+    public getHealth = () : number => this.health;
 }

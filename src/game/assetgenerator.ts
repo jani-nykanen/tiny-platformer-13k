@@ -1,5 +1,5 @@
 import { Assets } from "../core/assets.js";
-import { applyPalette } from "../gfx/generator.js";
+import { applyPalette, cropBitmap } from "../gfx/generator.js";
 import { Bitmap } from "../gfx/bitmap.js";
 import { Canvas } from "../gfx/canvas.js";
 import { Flip } from "../gfx/flip.js";
@@ -71,7 +71,10 @@ const GAME_ART_PALETTE_TABLE : string[] = [
     "10J2", "10J2", "10J2", "10J2", "10J2", "10J2", "10J2", "10J2",
 
     "10J2", "10J2", "1089", "0000", "107K", "10IK", "10IK", "10IK",
-    "10J2", "10J2", "1042", "1042", "10IK", "10IK", "10IK", "10IK"
+    "10J2", "10J2", "1042", "1042", "10IK", "10IK", "10IK", "10IK",
+
+    "0000", "0000", "0002", "0002", "10J2", "10J2", "0000", "0000",
+    "0000", "0000", "0002", "0002", "10J2", "10J2", "0000", "0000"
 ];
 
 
@@ -79,10 +82,10 @@ const generateFonts = (assets : Assets) : void => {
 
     const bmpFontRaw : Bitmap = assets.getBitmap("_f");
 
-    const fontBlack = applyPalette(bmpFontRaw, 
+    const fontBlack : Bitmap = applyPalette(bmpFontRaw, 
         (new Array<string>(16*8)).fill("0001"), 
         PALETTE_LOOKUP);
-    const fontWhite = applyPalette(bmpFontRaw, 
+    const fontWhite : Bitmap = applyPalette(bmpFontRaw, 
         (new Array<string>(16*8)).fill("0002"), 
         PALETTE_LOOKUP);
 
@@ -94,7 +97,6 @@ const generateFonts = (assets : Assets) : void => {
 const generateGameArt = (assets : Assets) : void => {
 
     const bmpGameArtRaw : Bitmap = assets.getBitmap("_g");
-
     const bmpGameArt : Bitmap = applyPalette(bmpGameArtRaw,
         GAME_ART_PALETTE_TABLE, PALETTE_LOOKUP);
 
@@ -316,7 +318,7 @@ const generatePlayer = (assets : Assets, bmpGameArt : Bitmap) : Bitmap => {
     const LEG_SX : number[] = [0, 16, 32, 48, 32, 16, 32, 0];
     const LEG_SY : number[] = [72, 64, 64, 64, 64, 72, 72, 88];
 
-    const canvas : Canvas = new Canvas(160, 32);
+    const canvas : Canvas = new Canvas(176, 32);
 
     for (let i = 0; i < LEG_SX.length; ++ i) {
 
@@ -337,6 +339,9 @@ const generatePlayer = (assets : Assets, bmpGameArt : Bitmap) : Bitmap => {
 
         canvas.drawBitmap(bmpGameArt, Flip.None, 8*16 + i*2, 0, 16, 80 + i*8, 8 + i*8, 8);
     }
+
+    // Hurt (I almost forgot this one)
+    canvas.drawBitmap(bmpGameArt, Flip.None, 160, 0, 32, 96, 16, 16);
 
     return canvas.toBitmap();
 }
@@ -420,6 +425,30 @@ const generateMoon = (assets : Assets) : void => {
 }
 
 
+const generateHUDIcons = (assets : Assets) : void => {
+    
+    const bmpHeartRawCropped : Bitmap = cropBitmap(assets.getBitmap("_g"), 0, 96, 16, 16);
+    const bmpGameArt : Bitmap = assets.getBitmap("g");
+
+    const bmp1 : Bitmap = applyPalette(bmpHeartRawCropped, 
+        new Array<string>(4).fill("10GM"),
+        PALETTE_LOOKUP);
+    const bmp2 : Bitmap = applyPalette(bmpHeartRawCropped, 
+        (new Array<string>(4)).fill("1034"), 
+        PALETTE_LOOKUP);
+
+    const canvas : Canvas = new Canvas(32, 16);
+
+    canvas.drawBitmap(bmpGameArt, Flip.None, 0, 0, 16, 96, 16, 16);
+    canvas.drawBitmap(bmp1, Flip.None, 0, 0);
+
+    canvas.drawBitmap(bmpGameArt, Flip.None, 16, 0, 16, 96, 16, 16);
+    canvas.drawBitmap(bmp2, Flip.None, 16, 0);
+
+    assets.addBitmap("h", canvas.toBitmap());
+}
+
+
 // Hmm, generating assets from assets...
 export const generateAssets = (assets : Assets) : void => {
 
@@ -429,4 +458,5 @@ export const generateAssets = (assets : Assets) : void => {
     generateSprites(assets);
     generateClouds(assets);
     generateMoon(assets);
+    generateHUDIcons(assets);
 }

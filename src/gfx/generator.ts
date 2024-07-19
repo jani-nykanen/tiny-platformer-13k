@@ -116,3 +116,14 @@ export const createBitmapFromUint8Array = (array : Uint8Array,
 
     return canvas;
 }
+
+
+export const cropBitmap = (source : Bitmap, sx : number, sy : number, sw : number, sh : number) : Bitmap => {
+
+    const canvas : HTMLCanvasElement = createEmptyCanvas(sw, sh);
+    const ctx : CanvasRenderingContext2D = canvas.getContext("2d");
+
+    ctx.drawImage(source, sx, sy, sw, sh, 0, 0, sw, sh);
+
+    return canvas;
+}

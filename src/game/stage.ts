@@ -131,6 +131,8 @@ export class Stage {
         const HORIZONTAL_OFFSET : number = 1;
         const VERTICAL_OFFSET : number = 1;
         const COIN_RADIUS : number = 4;
+        const SPIKE_WIDTH : number = 8;
+        const SPIKE_HEIGHT : number = 4;
 
         const dx : number = x*TILE_WIDTH;
         const dy : number = y*TILE_HEIGHT;
@@ -156,6 +158,12 @@ export class Stage {
         if ((colID & CollisionBit.Right) != 0) {
 
             o.horizontalCollision(dx + TILE_WIDTH, dy + VERTICAL_OFFSET, TILE_HEIGHT - VERTICAL_OFFSET*2, -1, event);
+        }
+
+        // Spike
+        if ((colID & CollisionBit.SpikeBottom) != 0) {
+
+            o.hurtCollision?.(dx + SPIKE_WIDTH/2, dy + TILE_HEIGHT - SPIKE_HEIGHT, SPIKE_WIDTH, SPIKE_HEIGHT, event);
         }
 
         // Star block

@@ -24,6 +24,20 @@ export class Game implements Scene {
         this.objects = new ObjectManager();
     }
 
+
+    private drawHUD(canvas : Canvas) : void {
+
+        const bmpHUD : Bitmap = canvas.assets.getBitmap("h");
+
+        const playerHealth : number = this.objects.player.getHealth();
+        for (let i = 0; i < this.objects.player.maxHealth; ++ i) {
+
+            const sx : number = playerHealth > i ? 0 : 16;
+
+            canvas.drawBitmap(bmpHUD, Flip.None, i*15, 2, sx, 0, 16, 16);
+        }
+    }
+
     
     public onChange(param : SceneParameter, event : ProgramEvent): void {
 
@@ -58,7 +72,7 @@ export class Game implements Scene {
         this.objects.draw(canvas);
 
         canvas.moveTo();
-        // TODO: Draw HUD etc.
+        this.drawHUD(canvas);
     }
 
 
