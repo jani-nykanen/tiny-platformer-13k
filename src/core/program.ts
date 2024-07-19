@@ -3,7 +3,7 @@ import { ProgramEvent } from "./event.js";
 import { Canvas } from "../gfx/canvas.js";
 import { Input } from "./input.js";
 import { SceneManager } from "./scenemanager.js";
-
+import { Transition } from "./transition.js";
 
 
 export class Program {
@@ -13,6 +13,7 @@ export class Program {
     private canvas : Canvas;
     private scenes : SceneManager;
     private assets : Assets;
+    private transition : Transition;
     private event : ProgramEvent;
     
     private timeSum : number = 0.0;
@@ -30,12 +31,34 @@ export class Program {
         this.input = new Input();
         this.scenes = new SceneManager();
         this.assets = new Assets();
+        this.transition = new Transition();
 
         this.canvas = new Canvas(
             canvasMinWidth, canvasMinHeight,
             canvasMaxWidth, canvasMaxHeight,
             this.assets, true);
-        this.event = new ProgramEvent(this.input, this.scenes, this.assets, this.canvas); 
+        this.event = new ProgramEvent(this.input, this.scenes, this.assets, this.canvas, this.transition); 
+    }
+
+
+    private drawLoadingScreen(canvas : Canvas) : void {
+
+        const OUTLINE : number = 1;
+        const WIDTH : number  = 80;
+        const HEIGHT : number  = 12;
+
+        const p : number = this.assets.loadedRatio();
+
+        const dx : number = canvas.width/2 - WIDTH/2;
+        const dy : number = canvas.height/2 - HEIGHT/2;
+
+        canvas.clear("#000000");
+        canvas.setFillColor("#ffffff");
+        canvas.fillRect(dx, dy, WIDTH, HEIGHT);
+        canvas.setFillColor("#000000");
+        canvas.fillRect(dx + OUTLINE, dy + OUTLINE, WIDTH - OUTLINE*2, HEIGHT - OUTLINE*2);
+        canvas.setFillColor("#ffffff");
+        canvas.fillRect(dx + OUTLINE*2, dy + OUTLINE*2, (WIDTH - OUTLINE*4)*p, HEIGHT - OUTLINE*4);
     }
 
 
@@ -67,6 +90,7 @@ export class Program {
                 if (loaded) {
 
                     this.scenes.activeScene?.update(this.event);
+                    this.transition.update(this.event);
                 }
                 
                 if (firstFrame) {
@@ -79,11 +103,11 @@ export class Program {
             if (loaded) {
                 
                 this.scenes.activeScene?.redraw(this.canvas);
+                this.transition.draw(this.canvas);
             }
             else {
 
-                // TODO: Draw a loading screen
-                this.canvas.clear("#0055aa");
+                this.drawLoadingScreen(this.canvas);
             }
         }
         catch (e : any) {

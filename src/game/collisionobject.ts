@@ -24,6 +24,7 @@ export class CollisionObject extends GameObject {
 
     public coinCollision?(x : number, y : number, radius : number, event : ProgramEvent) : boolean;
     public hurtCollision?(x : number, y : number, w : number, h : number, event : ProgramEvent) : boolean;
+    public lavaCollision?(y : number, event : ProgramEvent) : boolean;
 
 
     public verticalCollision(x : number, y : number, 

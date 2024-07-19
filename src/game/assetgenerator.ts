@@ -3,6 +3,7 @@ import { applyPalette, cropBitmap } from "../gfx/generator.js";
 import { Bitmap } from "../gfx/bitmap.js";
 import { Canvas } from "../gfx/canvas.js";
 import { Flip } from "../gfx/flip.js";
+import { SKY_COLOR } from "./skycolor.js";
 
 
 // TODO: Do people say "light" or "bright" when
@@ -396,7 +397,7 @@ const generateClouds = (assets : Assets) : void => {
     const HEIGHT : number = 96;
     const SINE_FACTOR : number = 1.5;
 
-    const COLORS : string[] = ["#ffffff", "#b8b8f2", "#9191da"];
+    const COLORS : string[] = ["#dbffff", "#82c1ff", "#246db6"];
 
     for (let i = 0; i < COLORS.length; ++ i) {
 
@@ -418,7 +419,8 @@ const generateMoon = (assets : Assets) : void => {
     canvas.setFillColor("#ffffb6");
     canvas.fillCircle(RADIUS - 2, RADIUS - 2, RADIUS - 2);
 
-    canvas.setFillColor("#dbdbff");
+    // "Hole"
+    canvas.setFillColor(SKY_COLOR);
     canvas.fillCircle(RADIUS - RADIUS/2, RADIUS - RADIUS/4, RADIUS - 8);
 
     assets.addBitmap("m", canvas.toBitmap());

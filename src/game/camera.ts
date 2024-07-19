@@ -4,7 +4,7 @@ import { Canvas } from "../gfx/canvas.js";
 import { InputState } from "../core/inputstate.js";
 import { Rectangle } from "../math/rectangle.js";
 import { GameObject, updateSpeedAxis } from "./gameobject.js";
-import { clamp } from "../math/utility.js";
+import { clamp, negMod } from "../math/utility.js";
 
 
 export class Camera {
@@ -73,6 +73,12 @@ export class Camera {
     }
 
 
+    public moveToTarget() : void {
+
+        this.pos = this.targetPos.clone();
+    }
+
+
     public update(event : ProgramEvent) : void {
 
         const H_FACTOR : number = 8;
@@ -112,7 +118,7 @@ export class Camera {
 
     public isInsideVisibleArea(pos : Vector, area : Rectangle) : boolean {
 
-        return false;
+        return Rectangle.overlay(area, new Rectangle(0, 0, this.cwidth, this.cheight), pos, this.pos);
     }
 
 
@@ -120,5 +126,13 @@ export class Camera {
 
         // TODO: round vs floor?
         canvas.moveTo(-(this.pos.x), -(this.pos.y));
+    }
+
+
+    public getRelativePosition(o : Vector) : Vector  {
+        
+        return new Vector(
+            negMod(o.x - this.pos.x, this.cwidth),
+            negMod(o.y - this.pos.y, this.cheight));
     }
 }

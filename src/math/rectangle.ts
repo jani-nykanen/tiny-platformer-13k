@@ -18,6 +18,7 @@ export class Rectangle {
     }
 
 
+    // IMPORTANT NOTE: the rectangles are assumed to be centered
     static overlay(r1 : Rectangle, r2 : Rectangle, 
         shift1 : Vector = new Vector(), shift2 : Vector = new Vector()) : boolean {
 

@@ -9,6 +9,7 @@ import { CollisionObject } from "./collisionobject.js";
 import { ProgramEvent } from "../core/event.js";
 import { Vector } from "../math/vector.js";
 import { AnimatedSprite } from "../gfx/animatedsprite.js";
+import { SKY_COLOR } from "./skycolor.js";
 
 
 const BUMP_TIME : number = 6.0;
@@ -244,7 +245,7 @@ export class Stage {
 
     public update(event : ProgramEvent) : void {
 
-        const CLOUD_SPEEDS : number[] = [0.25, 0.5, 1.0];
+        const CLOUD_SPEEDS : number[] = [0.3333, 0.6667, 1.3333];
         const WAVE_SPEED : number = Math.PI*2/60.0;
 
         if (this.bumpTimer > 0) {
@@ -270,7 +271,7 @@ export class Stage {
         const CLOUD_LAYER_OFFSET_Y : number = 32;
 
         // Sky
-        canvas.clear("#dbdbff");
+        canvas.clear(SKY_COLOR);
 
         // Moon
         const bmpMoon : Bitmap = canvas.assets.getBitmap("m");
@@ -351,6 +352,7 @@ export class Stage {
     public objectCollision(o : CollisionObject, event : ProgramEvent) : void {
 
         const COLLISION_MARGIN : number = 2;
+        const LAVA_OFFSET : number = 6;
 
         if (!o.isActive() || !o.doesTakeCollisions()) {
 
@@ -382,5 +384,8 @@ export class Stage {
                 this.tileCollision(o, x, y, colID, event);
             }
         }
+
+        // Lava below!
+        o.lavaCollision?.((this.height - 1)*TILE_HEIGHT + LAVA_OFFSET, event);
     }
 }

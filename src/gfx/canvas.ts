@@ -3,6 +3,7 @@ import { Vector } from "../math/vector.js";
 import { Align } from "./align.js";
 import { Flip } from "./flip.js";
 import { Bitmap } from "./bitmap.js";
+import { clamp } from "../math/utility.js";
 
 
 export class Canvas {
@@ -146,6 +147,12 @@ export class Canvas {
     }
 
 
+    public setAlpha(alpha : number = 1.0) : void {
+
+        this.ctx.globalAlpha = clamp(alpha, 0.0, 1.0);
+    }
+
+
     public fillRect(x : number = 0, y : number = 0, 
         w : number = this.width, h : number = this.height) : void {
 
@@ -172,6 +179,47 @@ export class Canvas {
             }
 
             this.ctx.fillRect(cx - r, cy + y, r*2, 1);
+        }
+    }
+
+
+    public fillCircleOutside(r : number, cx : number = this.width/2, cy : number = this.height/2) : void {
+
+        cx = (cx + this.translation.x) | 0;
+        cy = (cy + this.translation.y) | 0;
+
+        const start : number = Math.max(0, cy - r) | 0;
+        const end : number = Math.min(this.height, cy + r) | 0;
+
+        if (start > 0) {
+
+            this.fillRect(0, 0, this.width, start);
+        }
+        if (end < this.height) {
+
+            this.fillRect(0, end, this.width, this.height - end);
+        }
+
+        for (let y = start; y < end; ++ y) {
+
+            const dy : number = y - cy;
+            if (Math.abs(dy) >= r) {
+
+                this.ctx.fillRect(0, y, this.width, 1);
+                continue;
+            }
+
+            const px1 : number = Math.round(cx - Math.sqrt(r*r - dy*dy));
+            const px2 : number = Math.round(cx + Math.sqrt(r*r - dy*dy));
+
+            if (px1 > 0) {
+
+                this.ctx.fillRect(0, y, px1, 1);
+            }
+            if (px2 < this.width) {
+
+                this.ctx.fillRect(px2, y, this.width - px1, 1);
+            }
         }
     }
 

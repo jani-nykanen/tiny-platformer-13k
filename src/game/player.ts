@@ -11,6 +11,7 @@ import { Flip } from "../gfx/flip.js";
 
 const HURT_TIME : number = 60;
 const HURT_KNOCKBACK_TIME : number = 20;
+const DEATH_TIME : number = 60;
 
 
 export class Player extends CollisionObject {
@@ -27,6 +28,8 @@ export class Player extends CollisionObject {
     private canAttack : boolean = true;
 
     private hurtTimer : number = 0;
+    private deathTimer : number = 0;
+
     private health : number = 3;
 
     public readonly maxHealth : number = 3;
@@ -135,6 +138,12 @@ export class Player extends CollisionObject {
             return;
         }
         this.hurtTimer -= event.tick;
+        if (this.hurtTimer <= HURT_TIME && this.health == 0) {
+
+            this.hurtTimer = 0;
+            this.deathTimer = DEATH_TIME;
+            this.dying = true;
+        }
     }
 
     
@@ -171,6 +180,31 @@ export class Player extends CollisionObject {
     }
 
 
+    private drawDeath(canvas : Canvas) : void {
+
+        const MAX_DISTANCE : number = 64;
+        const COLORS : string[] = ["#5555aa", "#aaaaff" ,"#ffffff"];
+        const RADIUS : number[] = [7, 5, 3];
+        const COUNT : number = 8;
+    
+        const distance : number = (1.0 - this.deathTimer/DEATH_TIME)*MAX_DISTANCE;
+
+        for (let i = 0; i < COUNT; ++ i) {
+    
+            const angle : number = Math.PI*2/COUNT*i;
+    
+            const dx : number = this.pos.x + Math.cos(angle)*distance;
+            const dy : number = this.pos.y + Math.sin(angle)*distance;
+    
+            for (let j = 0; j < COLORS.length; ++ j) {
+    
+                canvas.setFillColor(COLORS[(j + ((((this.deathTimer/3) | 0)) % 3)) % 3]);
+                canvas.fillCircle(dx, dy, RADIUS[j]);
+            }
+        }   
+    }
+
+
     protected updateEvent(event : ProgramEvent) : void {
         
         this.control(event);
@@ -179,6 +213,12 @@ export class Player extends CollisionObject {
         this.updateHurt(event);
 
         this.touchSurface = false;
+    }
+
+
+    protected die(event : ProgramEvent) : boolean {
+        
+        return (this.deathTimer -= event.tick) <= 0;
     }
 
 
@@ -236,10 +276,28 @@ export class Player extends CollisionObject {
             return false;
         }
 
-        const dx : number = x + w/2;
-        if (Rectangle.overlay(this.hitbox, new Rectangle(dx, y + h/2, w, h), this.pos)) {
+        if (Rectangle.overlay(this.collisionBox, new Rectangle(x + w/2, y + h/2, w, h), this.pos)) {
 
-            this.hurt(dx > this.pos.x ? -1 : 1, event);
+            this.hurt(this.flip == Flip.None ? -1 : 1, event);
+            return true;
+        }
+        return false;
+    }
+
+
+    public lavaCollision(y : number, event : ProgramEvent) : boolean {
+        
+        if (!this.exist || this.dying) {
+
+            return false;
+        }
+
+        if (this.pos.y + this.collisionBox.y + this.collisionBox.h/2 > y) {
+
+            this.deathTimer = DEATH_TIME;
+            this.health = 0;
+            this.dying = true;
+
             return true;
         }
         return false;
@@ -247,6 +305,17 @@ export class Player extends CollisionObject {
 
 
     public draw(canvas : Canvas) : void {
+
+        if (!this.exist) {
+
+            return;
+        }
+
+        if (this.dying) {
+
+            this.drawDeath(canvas);
+            return;
+        }
 
         if (this.hurtTimer > 0 && this.hurtTimer <= HURT_TIME &&
             ((this.hurtTimer/2) | 0) % 2 != 0) {

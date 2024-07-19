@@ -12,9 +12,11 @@ export class ObjectManager {
     public readonly player : Player;
 
 
-    constructor() {
+    constructor(camera : Camera) {
 
         this.player = new Player(32, 13*TILE_HEIGHT + TILE_HEIGHT/2);
+        camera.followObject(this.player);
+        camera.moveToTarget();
     }
 
 
