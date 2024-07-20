@@ -4,6 +4,7 @@ import { Canvas } from "../gfx/canvas.js";
 import { Input } from "./input.js";
 import { SceneManager } from "./scenemanager.js";
 import { Transition } from "./transition.js";
+import { AudioPlayer } from "../audio/audioplayer.js";
 
 
 export class Program {
@@ -14,6 +15,7 @@ export class Program {
     private scenes : SceneManager;
     private assets : Assets;
     private transition : Transition;
+    private audio : AudioPlayer;
     private event : ProgramEvent;
     
     private timeSum : number = 0.0;
@@ -24,20 +26,21 @@ export class Program {
     private animationRequest : number | undefined = undefined;
 
 
-    constructor(ctx : AudioContext, 
-        canvasMinWidth : number,  canvasMaxWidth : number,
-        canvasMinHeight : number,  canvasMaxHeight : number,) {
+    constructor(canvasMinWidth : number,  canvasMaxWidth : number,
+        canvasMinHeight : number,  canvasMaxHeight : number,
+        audioCtx : AudioContext, audioMaxVolume : number = 0.60) {
         
         this.input = new Input();
         this.scenes = new SceneManager();
         this.assets = new Assets();
         this.transition = new Transition();
+        this.audio = new AudioPlayer(audioCtx, audioMaxVolume);
 
         this.canvas = new Canvas(
             canvasMinWidth, canvasMinHeight,
             canvasMaxWidth, canvasMaxHeight,
             this.assets, true);
-        this.event = new ProgramEvent(this.input, this.scenes, this.assets, this.canvas, this.transition); 
+        this.event = new ProgramEvent(this.input, this.scenes, this.assets, this.canvas, this.transition, this.audio); 
     }
 
 

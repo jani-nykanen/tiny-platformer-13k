@@ -59,8 +59,10 @@ export class Game implements Scene {
         }
 
         // Coins
+        const coins : number = this.objects.player.getCoins();
         const bmpFont : Bitmap = canvas.assets.getBitmap("fo");
-        canvas.drawText(bmpFont, "#00", canvas.width - ICON_OFF_X, ICON_OFF_Y - 1, -7, 0, Align.Right);
+        const coinString : string = (coins < 10 ? "#0" : "#") + String(coins);
+        canvas.drawText(bmpFont, coinString, canvas.width - ICON_OFF_X, ICON_OFF_Y - 1, -7, 0, Align.Right);
 
         canvas.drawBitmap(bmpHUD, Flip.None, canvas.width - ICON_OFF_X - 48, ICON_OFF_Y, 32, 0, 16, 16);
     }

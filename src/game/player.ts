@@ -31,6 +31,7 @@ export class Player extends CollisionObject {
     private deathTimer : number = 0;
 
     private health : number = 3;
+    private coins : number = 0;
 
     public readonly maxHealth : number = 3;
 
@@ -89,6 +90,8 @@ export class Player extends CollisionObject {
 
             this.jumpTimer = JUMP_TIME;
             this.ledgeTimer = 0.0;
+
+            event.audio.playSample(event.assets.getSample("j"), 0.60);
         }
         else if ((jumpButton & InputState.DownOrPressed) == 0) {
 
@@ -265,7 +268,13 @@ export class Player extends CollisionObject {
             return false;
         }
 
-        return Rectangle.overlay(this.hitbox, new Rectangle(x, y, radius*2, radius*2), this.pos);
+        if (Rectangle.overlay(this.hitbox, new Rectangle(x, y, radius*2, radius*2), this.pos)) {
+
+            event.audio.playSample(event.assets.getSample("c"), 0.60);
+            ++ this.coins;
+            return true;
+        }
+        return false;
     }
 
 
@@ -338,4 +347,5 @@ export class Player extends CollisionObject {
 
 
     public getHealth = () : number => this.health;
+    public getCoins = () : number => this.coins;
 }

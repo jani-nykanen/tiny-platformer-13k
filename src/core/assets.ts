@@ -1,4 +1,5 @@
 import { Bitmap } from "../gfx/bitmap.js";
+import { Sample } from "../audio/sample.js";
 
 
 export class Assets {
@@ -8,11 +9,13 @@ export class Assets {
     private assetCount : number = 0;
 
     private bitmaps : Map<string, Bitmap>;
+    private samples : Map<string, Sample>;
 
 
     constructor() {
 
         this.bitmaps = new Map<string, Bitmap> ();
+        this.samples = new Map<string, Sample> ();
     }
 
 
@@ -22,9 +25,21 @@ export class Assets {
     }
 
 
+    public addSample(name : string, sample : Sample) : void {
+
+        this.samples.set(name, sample);
+    }
+
+
     public getBitmap(name : string) : Bitmap | undefined {
 
         return this.bitmaps.get(name);
+    }
+
+
+    public getSample(name : string) : Sample | undefined {
+
+        return this.samples.get(name);
     }
 
 

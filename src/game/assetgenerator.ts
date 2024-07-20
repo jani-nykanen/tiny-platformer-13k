@@ -4,6 +4,8 @@ import { Bitmap } from "../gfx/bitmap.js";
 import { Canvas } from "../gfx/canvas.js";
 import { Flip } from "../gfx/flip.js";
 import { SKY_COLOR } from "./skycolor.js";
+import { AudioPlayer } from "../audio/audioplayer.js";
+import { Ramp } from "../audio/sample.js";
 
 
 // TODO: Do people say "light" or "bright" when
@@ -77,6 +79,11 @@ const GAME_ART_PALETTE_TABLE : string[] = [
     "0000", "0000", "10J2", "10J2", "0000", "0000", "0000", "0000",
     "0000", "0000", "10J2", "10J2", "0000", "0000", "0000", "0000"
 ];
+
+
+//
+// Bitmaps begin here
+//
 
 
 const generateGameArt = (assets : Assets) : void => {
@@ -477,9 +484,46 @@ const generateFonts = (assets : Assets) : void => {
 }
 
 
-// Hmm, generating assets from assets...
-export const generateAssets = (assets : Assets) : void => {
+//
+// Audio begins here
+//
 
+
+const generateSamples = (assets : Assets, audio : AudioPlayer) : void => {
+
+    // Jump
+    assets.addSample("j",
+        audio.createSample(
+            [64,  6, 
+             112, 5, 
+             160, 4, 
+             224, 3], 
+            0.60,
+            "sawtooth", 
+            Ramp.Exponential,
+            6
+        )
+    );
+
+    // Coin
+    assets.addSample("c",
+        audio.createSample(
+             [160, 4, 
+              100, 2,  
+             256, 12],
+            0.40,
+            "square", 
+            Ramp.Instant,
+            6
+        )
+    );
+}
+
+
+// Hmm, generating assets from assets...
+export const generateAssets = (assets : Assets, audio : AudioPlayer) : void => {
+
+    // Bitmaps
     generateGameArt(assets);
     generateTileset(assets);
     generateSprites(assets);
@@ -487,4 +531,7 @@ export const generateAssets = (assets : Assets) : void => {
     generateMoon(assets);
     generateHUDIcons(assets);
     generateFonts(assets);
+
+    // Audio
+    generateSamples(assets, audio);
 }
