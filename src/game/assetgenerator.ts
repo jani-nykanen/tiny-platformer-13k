@@ -74,25 +74,9 @@ const GAME_ART_PALETTE_TABLE : string[] = [
     "10J2", "10J2", "1089", "0000", "107K", "10IK", "10IK", "10IK",
     "10J2", "10J2", "1042", "1042", "10IK", "10IK", "10IK", "10IK",
 
-    "0000", "0000", "0002", "0002", "10J2", "10J2", "0000", "0000",
-    "0000", "0000", "0002", "0002", "10J2", "10J2", "0000", "0000"
+    "0000", "0000", "10J2", "10J2", "0000", "0000", "0000", "0000",
+    "0000", "0000", "10J2", "10J2", "0000", "0000", "0000", "0000"
 ];
-
-
-const generateFonts = (assets : Assets) : void => {
-
-    const bmpFontRaw : Bitmap = assets.getBitmap("_f");
-
-    const fontBlack : Bitmap = applyPalette(bmpFontRaw, 
-        (new Array<string>(16*8)).fill("0001"), 
-        PALETTE_LOOKUP);
-    const fontWhite : Bitmap = applyPalette(bmpFontRaw, 
-        (new Array<string>(16*8)).fill("0002"), 
-        PALETTE_LOOKUP);
-
-    assets.addBitmap("fb", fontBlack);
-    assets.addBitmap("fw", fontWhite);
-}
 
 
 const generateGameArt = (assets : Assets) : void => {
@@ -314,7 +298,7 @@ const generateTileset = (assets : Assets) : void => {
 }
 
 
-const generatePlayer = (assets : Assets, bmpGameArt : Bitmap) : Bitmap => { 
+const generatePlayer = (bmpGameArt : Bitmap) : Bitmap => { 
 
     const LEG_SX : number[] = [0, 16, 32, 48, 32, 16, 32, 0];
     const LEG_SY : number[] = [72, 64, 64, 64, 64, 72, 72, 88];
@@ -342,13 +326,13 @@ const generatePlayer = (assets : Assets, bmpGameArt : Bitmap) : Bitmap => {
     }
 
     // Hurt (I almost forgot this one)
-    canvas.drawBitmap(bmpGameArt, Flip.None, 160, 0, 32, 96, 16, 16);
+    canvas.drawBitmap(bmpGameArt, Flip.None, 160, 0, 16, 96, 16, 16);
 
     return canvas.toBitmap();
 }
 
 
-const generateCoin = (assets : Assets, bmpGameArt : Bitmap) : Bitmap => {
+const generateCoin = (bmpGameArt : Bitmap) : Bitmap => {
 
     const canvas : Canvas = new Canvas(64, 16);
 
@@ -365,8 +349,8 @@ const generateSprites = (assets : Assets) : void => {
 
     const bmpGameArt : Bitmap = assets.getBitmap("g");
 
-    assets.addBitmap("p", generatePlayer(assets, bmpGameArt));
-    assets.addBitmap("c", generateCoin(assets, bmpGameArt));
+    assets.addBitmap("p", generatePlayer(bmpGameArt));
+    assets.addBitmap("c", generateCoin(bmpGameArt));
 }
 
 
@@ -439,26 +423,68 @@ const generateHUDIcons = (assets : Assets) : void => {
         (new Array<string>(4)).fill("1034"), 
         PALETTE_LOOKUP);
 
-    const canvas : Canvas = new Canvas(32, 16);
+    const canvas : Canvas = new Canvas(48, 16);
 
-    canvas.drawBitmap(bmpGameArt, Flip.None, 0, 0, 16, 96, 16, 16);
     canvas.drawBitmap(bmp1, Flip.None, 0, 0);
-
-    canvas.drawBitmap(bmpGameArt, Flip.None, 16, 0, 16, 96, 16, 16);
     canvas.drawBitmap(bmp2, Flip.None, 16, 0);
 
+    canvas.drawBitmap(bmpGameArt, Flip.None, 32, 0, 32, 80, 16, 16);
+
     assets.addBitmap("h", canvas.toBitmap());
+}
+
+
+const generateFonts = (assets : Assets) : void => {
+
+    const YOFF : number = 32;
+
+    const bmpFontRaw : Bitmap = assets.getBitmap("_f");
+
+    const fontBlack : Bitmap = applyPalette(bmpFontRaw, 
+        (new Array<string>(16*8)).fill("0001"), 
+        PALETTE_LOOKUP);
+    const fontWhite : Bitmap = applyPalette(bmpFontRaw, 
+        (new Array<string>(16*8)).fill("0002"), 
+        PALETTE_LOOKUP);
+
+    const canvas : Canvas = new Canvas(256, 64 + YOFF);
+
+    assets.addBitmap("fw", fontWhite);
+
+    for (let y = 0; y < 4; ++ y) {
+
+        for (let x = 0; x < 16; ++ x) {
+
+            const dx : number = x*16 + 4;
+            const dy : number = YOFF + y*16 + 6
+
+            // Outlines
+            for (let i = -1; i <= 1; ++ i) {
+
+                for (let j = -1; j <= 1; ++ j) {
+
+                    // if (i == j) continue;
+                    canvas.drawBitmap(fontBlack, Flip.None, dx + i, dy + j, x*8, y*8, 8, 8);
+                }
+            }
+
+            // Base font
+            canvas.drawBitmap(fontWhite, Flip.None, dx, dy, x*8, y*8, 8, 8);
+        }
+    }
+
+    assets.addBitmap("fo", canvas.toBitmap());
 }
 
 
 // Hmm, generating assets from assets...
 export const generateAssets = (assets : Assets) : void => {
 
-    generateFonts(assets);
     generateGameArt(assets);
     generateTileset(assets);
     generateSprites(assets);
     generateClouds(assets);
     generateMoon(assets);
     generateHUDIcons(assets);
+    generateFonts(assets);
 }
