@@ -74,7 +74,7 @@ export class Stage {
 
         this.sprCoin = new AnimatedSprite(16, 16);
 
-        this.cloudPositions = [0, 80, 160];
+        this.cloudPositions = [0, 120];
     }
 
 
@@ -172,6 +172,8 @@ export class Stage {
 
             if (o.verticalCollision(dx + HORIZONTAL_OFFSET, dy + TILE_HEIGHT, TILE_WIDTH - HORIZONTAL_OFFSET*2, -1, event)) {
 
+                event.audio.playSample("h", 0.75);
+
                 // Have you ever noticed that in Mario you can never
                 // hit two question blocks at once? This is used to emulate
                 // that behavior
@@ -218,7 +220,7 @@ export class Stage {
         // Lava
         case 127: {
 
-            const bmpGameArt : Bitmap = canvas.assets.getBitmap("g");
+            const bmpGameArt : Bitmap = canvas.getBitmap?.("g");
             for (let dx = 0; dx < 32; ++ dx) {
 
                 canvas.drawBitmap(bmpGameArt, Flip.None, 
@@ -232,7 +234,7 @@ export class Stage {
         // Coin
         case 128: {
 
-                const bmpCoin : Bitmap = canvas.assets?.getBitmap("c");
+                const bmpCoin : Bitmap = canvas.getBitmap?.("c");
                 this.sprCoin.draw(canvas, bmpCoin, x*TILE_WIDTH, y*TILE_HEIGHT);
             }
             break;
@@ -245,7 +247,7 @@ export class Stage {
 
     public update(event : ProgramEvent) : void {
 
-        const CLOUD_SPEEDS : number[] = [0.3333, 0.6667, 1.3333];
+        const CLOUD_SPEEDS : number[] = [0.5, 1.0];
         const WAVE_SPEED : number = Math.PI*2/60.0;
 
         if (this.bumpTimer > 0) {
@@ -267,34 +269,34 @@ export class Stage {
 
     public drawBackground(canvas : Canvas, camera : Camera) : void {
 
-        const CLOUD_BASE_OFFSET_Y : number = 48;
-        const CLOUD_LAYER_OFFSET_Y : number = 32;
+        const CLOUD_BASE_OFFSET_Y : number = 64;
+        const CLOUD_LAYER_OFFSET_Y : number = 48;
 
         // Sky
         canvas.clear(SKY_COLOR);
 
         // Moon
-        const bmpMoon : Bitmap = canvas.assets.getBitmap("m");
+        const bmpMoon : Bitmap = canvas.getBitmap?.("m");
         canvas.drawBitmap(bmpMoon, Flip.None, canvas.width - 100, 16);
 
         // Clouds
-        const bmpClouds : Bitmap[] = [1, 2, 3].map(i => canvas.assets?.getBitmap("c" + String(i)));
+        const bmpClouds : Bitmap[] = [1, 2].map(i => canvas.getBitmap?.("c" + String(i)));
         const width : number = bmpClouds[0]?.width ?? 256;
         const height : number = bmpClouds[0]?.height ?? 128;
 
         const repeat : number = (canvas.width/width) + 3;
 
-        for (let j = 0; j < 3; ++ j) {
+        for (let j = 0; j < 2; ++ j) {
 
-            const camShiftX : number = -((camera.left/((3 - j)*2)) % width);
-            const camShiftY : number = -(camera.top/((3 - j)*2));
+            const camShiftX : number = -((camera.left/((2 - j)*2)) % width);
+            const camShiftY : number = -(camera.top/((2 - j)*2));
 
             const shiftx : number = -this.cloudPositions[j] + camShiftX;
-            const shifty : number = CLOUD_BASE_OFFSET_Y - (2 - j)*CLOUD_LAYER_OFFSET_Y + camShiftY;
+            const shifty : number = CLOUD_BASE_OFFSET_Y - (1 - j)*CLOUD_LAYER_OFFSET_Y + camShiftY;
 
             for (let i = -1; i < repeat - 1; ++ i) {
 
-                canvas.drawBitmap(bmpClouds[2 - j], Flip.None, i*width + shiftx, canvas.height - height + shifty);
+                canvas.drawBitmap(bmpClouds[1 - j], Flip.None, i*width + shiftx, canvas.height - height + shifty);
             }
         }
     }
@@ -306,7 +308,7 @@ export class Stage {
         const BUMP_AMPLITUDE : number = 2;
         const CAMERA_MARGIN : number = 1;
 
-        const bmpTileset : Bitmap = canvas.assets?.getBitmap("ts");
+        const bmpTileset : Bitmap = canvas.getBitmap?.("ts");
 
         const startx : number = ((camera.left/TILE_WIDTH) | 0) - CAMERA_MARGIN;
         const starty : number = ((camera.top/TILE_HEIGHT) | 0) - CAMERA_MARGIN;

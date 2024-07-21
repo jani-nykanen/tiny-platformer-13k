@@ -1,3 +1,3 @@
 
 
-export const SKY_COLOR : string = "#4992db";
+export const SKY_COLOR : string = "#004992";

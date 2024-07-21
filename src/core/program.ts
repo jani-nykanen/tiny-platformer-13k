@@ -5,6 +5,8 @@ import { Input } from "./input.js";
 import { SceneManager } from "./scenemanager.js";
 import { Transition } from "./transition.js";
 import { AudioPlayer } from "../audio/audioplayer.js";
+import { Bitmap } from "../gfx/bitmap.js";
+import { Sample } from "../audio/sample.js";
 
 
 export class Program {
@@ -34,12 +36,14 @@ export class Program {
         this.scenes = new SceneManager();
         this.assets = new Assets();
         this.transition = new Transition();
-        this.audio = new AudioPlayer(audioCtx, audioMaxVolume);
+        this.audio = new AudioPlayer(audioCtx, 
+            (name : string) : Sample => this.assets.getSample(name), 
+            audioMaxVolume);
 
         this.canvas = new Canvas(
             canvasMinWidth, canvasMinHeight,
             canvasMaxWidth, canvasMaxHeight,
-            this.assets, true);
+            (name : string) : Bitmap => this.assets.getBitmap(name), true);
         this.event = new ProgramEvent(this.input, this.scenes, this.assets, this.canvas, this.transition, this.audio); 
     }
 

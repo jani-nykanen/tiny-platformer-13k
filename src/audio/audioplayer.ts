@@ -10,9 +10,16 @@ export class AudioPlayer {
     private enabled : boolean;
 
 
-    constructor(ctx : AudioContext, globalVolume : number = 0.60) {
+    public readonly getSample : (name : string) => Sample;
+
+
+    constructor(ctx : AudioContext, 
+        getSample : (name : string) => Sample,
+        globalVolume : number = 0.60) {
 
         this.ctx = ctx;
+
+        this.getSample = getSample;
 
         this.enabled = true;
         this.globalVolume = globalVolume;
@@ -26,16 +33,17 @@ export class AudioPlayer {
         attackTime : number = 2) : Sample => new Sample(this.ctx, sequence, baseVolume, type, ramp, attackTime);
 
 
-    public playSample(sample : Sample | undefined, volume : number = 1.0) : void {
+    public playSample(sample : Sample | string | undefined, volume : number = 1.0) : void {
 
         if (!this.enabled) {
 
             return;
         }
 
+        const actualSample : Sample | undefined = typeof(sample) === "string" ? this.getSample(sample) : sample;
         try {
 
-            sample?.play(volume*this.globalVolume);
+            actualSample?.play(volume*this.globalVolume);
         }
         catch (e) {}
     }

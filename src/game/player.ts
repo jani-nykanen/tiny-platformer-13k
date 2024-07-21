@@ -91,7 +91,7 @@ export class Player extends CollisionObject {
             this.jumpTimer = JUMP_TIME;
             this.ledgeTimer = 0.0;
 
-            event.audio.playSample(event.assets.getSample("j"), 0.60);
+            event.audio.playSample("j", 0.60);
         }
         else if ((jumpButton & InputState.DownOrPressed) == 0) {
 
@@ -109,6 +109,8 @@ export class Player extends CollisionObject {
             this.target.zeros();
         
             this.canAttack = false;
+
+            event.audio.playSample("a", 0.70);
         }
     }
 
@@ -146,6 +148,8 @@ export class Player extends CollisionObject {
             this.hurtTimer = 0;
             this.deathTimer = DEATH_TIME;
             this.dying = true;
+
+            event.audio.playSample("d", 0.70);
         }
     }
 
@@ -270,7 +274,7 @@ export class Player extends CollisionObject {
 
         if (Rectangle.overlay(this.hitbox, new Rectangle(x, y, radius*2, radius*2), this.pos)) {
 
-            event.audio.playSample(event.assets.getSample("c"), 0.60);
+            event.audio.playSample("c", 0.60);
             ++ this.coins;
             return true;
         }
@@ -286,6 +290,8 @@ export class Player extends CollisionObject {
         }
 
         if (Rectangle.overlay(this.collisionBox, new Rectangle(x + w/2, y + h/2, w, h), this.pos)) {
+
+            event.audio.playSample("hu", 0.70);
 
             this.hurt(this.flip == Flip.None ? -1 : 1, event);
             return true;
@@ -306,6 +312,8 @@ export class Player extends CollisionObject {
             this.deathTimer = DEATH_TIME;
             this.health = 0;
             this.dying = true;
+
+            event.audio.playSample("d", 0.70);
 
             return true;
         }
@@ -335,7 +343,7 @@ export class Player extends CollisionObject {
         const dx : number = this.pos.x - 8;
         const dy : number = this.pos.y - 7;
 
-        const bmpPlayer : Bitmap = canvas.assets?.getBitmap("p");
+        const bmpPlayer : Bitmap = canvas.getBitmap?.("p");
         this.bodySprite.draw(canvas, bmpPlayer, dx, dy, this.flip);
 
         if (this.attackTimer > 0) {

@@ -385,10 +385,10 @@ const generateClouds = (assets : Assets) : void => {
     const AMPLITUDE : number = 16;
     const PERIOD : number = 24;
     const WIDTH : number = 240;
-    const HEIGHT : number = 96;
+    const HEIGHT : number = 120;
     const SINE_FACTOR : number = 1.5;
 
-    const COLORS : string[] = ["#dbffff", "#82c1ff", "#246db6"];
+    const COLORS : string[] = ["#92dbff", "#4992db"];
 
     for (let i = 0; i < COLORS.length; ++ i) {
 
@@ -502,8 +502,7 @@ const generateSamples = (assets : Assets, audio : AudioPlayer) : void => {
             "sawtooth", 
             Ramp.Exponential,
             6
-        )
-    );
+        ));
 
     // Coin
     assets.addSample("c",
@@ -515,8 +514,59 @@ const generateSamples = (assets : Assets, audio : AudioPlayer) : void => {
             "square", 
             Ramp.Instant,
             6
-        )
-    );
+        ));
+
+    // Hit (block)
+    assets.addSample("h",
+        audio.createSample(
+            [80, 4,
+            96, 3,
+            112, 2
+            ], 
+            0.60,
+            "square", 
+            Ramp.Instant,
+            3
+        ));
+
+    // Attack
+    assets.addSample("a",
+        audio.createSample(
+            [160, 3,
+            128, 2,
+            96, 4
+            ], 
+            0.80,
+            "sawtooth", 
+            Ramp.Linear,
+            3
+        ));
+
+    // Hurt
+    assets.addSample("hu",
+        audio.createSample(
+            [160, 4,
+            112, 3,
+            96, 6,
+            ], 
+            0.60,
+            "square", 
+            Ramp.Exponential,
+            2
+        ));
+
+    // Death
+    assets.addSample("d",
+        audio.createSample(
+            [96, 6, 
+            144, 4, 
+            96, 8, 
+            64, 24], 
+            0.50,
+            "square", 
+            Ramp.Linear, 
+            6
+        ));
 }
 
 

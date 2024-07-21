@@ -28,12 +28,12 @@ export class Canvas {
         return this.canvas.height;
     }
 
-    public readonly assets : Assets | undefined;
+    public readonly getBitmap : ((name : string) => Bitmap) | undefined = undefined;
 
 
     constructor(minWidth : number, minHeight : number, 
         maxWidth : number = minWidth, maxHeight : number = minHeight,
-        assets : Assets | undefined = undefined,
+        getBitmap : ((name : string) => Bitmap) | undefined = undefined,
         embed : boolean = false) {
 
         this.minWidth = minWidth;
@@ -41,7 +41,7 @@ export class Canvas {
         this.minHeight = minHeight;
         this.maxHeight = maxHeight;
 
-        this.assets = assets;
+        this.getBitmap = getBitmap;
 
         this.createCanvas(minWidth, minHeight, embed);
         if (embed) {

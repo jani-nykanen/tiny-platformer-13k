@@ -47,7 +47,7 @@ export class Game implements Scene {
         const ICON_OFF_X : number = 2;
         const ICON_OFF_Y : number = 2;
 
-        const bmpHUD : Bitmap = canvas.assets.getBitmap("h");
+        const bmpHUD : Bitmap = canvas.getBitmap?.("h");
 
         // Health
         const playerHealth : number = this.objects.player.getHealth();
@@ -60,7 +60,7 @@ export class Game implements Scene {
 
         // Coins
         const coins : number = this.objects.player.getCoins();
-        const bmpFont : Bitmap = canvas.assets.getBitmap("fo");
+        const bmpFont : Bitmap = canvas.getBitmap?.("fo");
         const coinString : string = (coins < 10 ? "#0" : "#") + String(coins);
         canvas.drawText(bmpFont, coinString, canvas.width - ICON_OFF_X, ICON_OFF_Y - 1, -7, 0, Align.Right);
 
@@ -90,7 +90,7 @@ export class Game implements Scene {
 
         if (!this.objects.player.doesExist()) {
 
-            event.transition.activate(true, TransitionType.Circle, 1.0/60.0, 
+            event.transition.activate(true, TransitionType.Circle, 1.0/45.0, 
                 (event : ProgramEvent) : void => this.reset(event), "#000000",
                 this.camera.getRelativePosition(this.objects.player.getPosition()));
         }
@@ -103,11 +103,11 @@ export class Game implements Scene {
 
         this.stage.drawBackground(canvas, this.camera);
 
-        // const bmpGameArt : Bitmap = canvas.assets?.getBitmap("g");
+        // const bmpGameArt : Bitmap = canvas.getBitmap?.("g");
         // canvas.drawBitmap(bmpGameArt, Flip.None, 8, 8);
-        // const bmpTileset : Bitmap = canvas.assets?.getBitmap("ts");
+        // const bmpTileset : Bitmap = canvas.getBitmap?.("ts");
         // canvas.drawBitmap(bmpTileset, Flip.None, 96, 8);
-        // const bmp : Bitmap = canvas.assets?.getBitmap("fo");
+        // const bmp : Bitmap = canvas.getBitmap?.("fo");
         // canvas.drawBitmap(bmp, Flip.None, 128, 8);
         
         this.camera.apply(canvas);
