@@ -9,6 +9,8 @@ export class CollisionObject extends GameObject {
     protected collisionBox : Rectangle;
     protected takeCollisions : boolean = true;
 
+    protected touchSurface : boolean = true;
+
 
     constructor(x : number = 0, y : number = 0, exist : boolean = false) {
 
@@ -58,6 +60,8 @@ export class CollisionObject extends GameObject {
             this.speed.y = 0.0;
                 
             this.verticalCollisionEvent?.(direction, event);
+
+            this.touchSurface = true;
 
             return true;
         }

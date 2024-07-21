@@ -67,18 +67,23 @@ const GAME_ART_PALETTE_TABLE : string[] = [
     "10BD", "10BD", "0002", "10FE", "10FE", "1007", "1007", "G7LM", 
     "10BD", "10BD", "1043", "10FE", "10FE", "1007", "1007", "G7LM", 
 
-    "10HG", "10HG", "10HG", "10HG", "000I", "1IE2", "1IE2", "0000",
+    "10HG", "10HG", "10HG", "10HG", "000I", "1IE2", "1IE2", "10L7",
     "10HG", "10HG", "10HG", "10HG", "10E2", "10E2", "10E2", "000I",
 
     "10J2", "10J2", "10J2", "10J2", "10J2", "10J2", "10J2", "10J2",
     "10J2", "10J2", "10J2", "10J2", "10J2", "10J2", "10J2", "10J2",
 
-    "10J2", "10J2", "1089", "0000", "107K", "10IK", "10IK", "10IK",
+    "10J2", "10J2", "1089", "10IK", "107K", "10IK", "10IK", "10IK",
     "10J2", "10J2", "1042", "1042", "10IK", "10IK", "10IK", "10IK",
 
     "0000", "0000", "10J2", "10J2", "0000", "0000", "0000", "0000",
     "0000", "0000", "10J2", "10J2", "0000", "0000", "0000", "0000"
 ];
+
+
+// For the player and some enemies
+const LEG_SX : number[] = [0, 16, 32, 48, 32, 16, 32, 0];
+const LEG_SY : number[] = [72, 64, 64, 64, 64, 72, 72, 88];
 
 
 //
@@ -307,9 +312,6 @@ const generateTileset = (assets : Assets) : void => {
 
 const generatePlayer = (bmpGameArt : Bitmap) : Bitmap => { 
 
-    const LEG_SX : number[] = [0, 16, 32, 48, 32, 16, 32, 0];
-    const LEG_SY : number[] = [72, 64, 64, 64, 64, 72, 72, 88];
-
     const canvas : Canvas = new Canvas(176, 32);
 
     for (let i = 0; i < LEG_SX.length; ++ i) {
@@ -339,6 +341,30 @@ const generatePlayer = (bmpGameArt : Bitmap) : Bitmap => {
 }
 
 
+const generateEnemies = (bmpGameArt : Bitmap, bmpGameArtRaw : Bitmap) : Bitmap => {
+
+    const canvas : Canvas = new Canvas(80, 16);
+
+    const coloredLegs : Bitmap = applyPalette(cropBitmap(bmpGameArtRaw, 16, 64, 48, 16),
+        new Array<string>(12).fill("10L7"),
+        PALETTE_LOOKUP);
+
+    for (let i = 0; i < 5; ++ i) {
+
+        // Legs
+        canvas.drawBitmap(coloredLegs, Flip.Horizontal, 
+            i*16 + 1, 8, 
+            LEG_SX[i + 1] - 16, LEG_SY[i + 1] - 64, 16, 8);
+        // Heads
+        canvas.drawBitmap(bmpGameArt, Flip.None, i*16 + 5, 0, 56, 48, 8, 8);
+        // Beak
+        canvas.drawBitmap(bmpGameArt, Flip.None, i*16 - 1, 0, 24, 80, 8, 8);
+    }
+
+    return canvas.toBitmap();
+}
+
+
 const generateCoin = (bmpGameArt : Bitmap) : Bitmap => {
 
     const canvas : Canvas = new Canvas(64, 16);
@@ -355,9 +381,11 @@ const generateCoin = (bmpGameArt : Bitmap) : Bitmap => {
 const generateSprites = (assets : Assets) : void => {
 
     const bmpGameArt : Bitmap = assets.getBitmap("g");
+    const bmpGameArtRaw : Bitmap = assets.getBitmap("_g");
 
     assets.addBitmap("p", generatePlayer(bmpGameArt));
     assets.addBitmap("c", generateCoin(bmpGameArt));
+    assets.addBitmap("e", generateEnemies(bmpGameArt, bmpGameArtRaw));
 }
 
 
@@ -491,18 +519,21 @@ const generateFonts = (assets : Assets) : void => {
 
 const generateSamples = (assets : Assets, audio : AudioPlayer) : void => {
 
-    // Jump
-    assets.addSample("j",
-        audio.createSample(
-            [64,  6, 0.20,
-             112, 5, 0.60,
-             160, 4, 0.70,
-             224, 3, 0.50], 
-            0.70,
-            "sawtooth", 
-            Ramp.Exponential,
-            0.20
-        ));
+    // Jump (need two of these, other one for enemies)
+    for (let i = 0; i < 2; ++ i) {
+
+        assets.addSample(i == 0 ? "j" : "ej",
+            audio.createSample(
+                [64,  6, 0.20,
+                112, 5, 0.60,
+                160, 4, 0.70,
+                224, 3, 0.50], 
+                0.70,
+                "sawtooth", 
+                Ramp.Exponential,
+                0.20
+            ));
+    }
 
     // Coin
     assets.addSample("c",
@@ -556,7 +587,7 @@ const generateSamples = (assets : Assets, audio : AudioPlayer) : void => {
     assets.addSample("d",
         audio.createSample(
             [64, 2, 0.50,
-             96, 3, 0.75,
+            96, 3, 0.75,
             176, 4, 1.0,
             112, 8, 0.80,
             80, 32, 0.60,
@@ -565,6 +596,19 @@ const generateSamples = (assets : Assets, audio : AudioPlayer) : void => {
             "square", 
             Ramp.Linear, 
             0.20
+        ));
+
+    // Kill
+    assets.addSample("k",
+        audio.createSample(
+            [160, 3, 0.80,
+            224, 4, 1.0,  
+            192, 6, 0.80,
+            96, 10, 0.40],
+            0.60,
+            "sawtooth", 
+            Ramp.Linear, 
+            0.30
         ));
 }
 

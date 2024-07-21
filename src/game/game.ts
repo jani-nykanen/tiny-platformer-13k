@@ -23,7 +23,7 @@ export class Game implements Scene {
 
         this.camera = new Camera(0, 0, event);
         this.stage = new Stage();
-        this.objects = new ObjectManager(this.camera);
+        this.objects = new ObjectManager(this.camera, this.stage);
         this.camera.restrict(this.stage.width*TILE_WIDTH, this.stage.height*TILE_HEIGHT);
     }
 
@@ -35,7 +35,7 @@ export class Game implements Scene {
         // this short demo, doing this in "improper way" saves a lot of
         // bytes!
         this.stage = new Stage();
-        this.objects = new ObjectManager(this.camera);
+        this.objects = new ObjectManager(this.camera, this.stage);
         this.camera.restrict(this.stage.width*TILE_WIDTH, this.stage.height*TILE_HEIGHT);
 
         event.transition.setCenter(this.camera.getRelativePosition(this.objects.player.getPosition()));
@@ -104,8 +104,8 @@ export class Game implements Scene {
         this.stage.drawBackground(canvas, this.camera);
 
         // Testing some bitmaps, commented out.
-        // const bmp : Bitmap = canvas.getBitmap?.("fo");
-        // canvas.drawBitmap(bmp, Flip.None, 128, 8);
+        // const bmp : Bitmap = canvas.getBitmap?.("e");
+        // canvas.drawBitmap(bmp, Flip.None, 64, 32);
         
         this.camera.apply(canvas);
         this.stage.drawLayers(canvas, this.camera);

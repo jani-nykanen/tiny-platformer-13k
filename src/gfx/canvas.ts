@@ -224,6 +224,44 @@ export class Canvas {
     }
 
 
+    public fillRing(cx : number, cy : number, 
+        innerRadius : number, outerRadius : number) : void {
+        
+        innerRadius |= 0;
+        outerRadius |= 0;
+
+        if (innerRadius >= outerRadius)
+            return;
+
+        cx = (cx + this.translation.x) | 0;
+        cy = (cy + this.translation.y) | 0;
+
+        for (let y = -outerRadius; y <= outerRadius; ++ y) {
+
+            const ny1 : number = y/outerRadius;
+            const r1 : number = Math.round(Math.sqrt(1 - ny1*ny1) * outerRadius);
+            if (r1 <= 0)
+                continue;
+
+            let r2 : number = 0;
+            if (Math.abs(y) < innerRadius) {
+
+                const ny2 : number = y/innerRadius;
+                r2 = Math.round(Math.sqrt(1 - ny2*ny2) * innerRadius);
+            }
+
+            if (r2 <= 0) {
+
+                this.ctx.fillRect(cx - r1, cy + y, r1*2, 1);
+                continue;
+            }
+           
+            this.ctx.fillRect(cx - r1, cy + y, r1 - r2, 1);
+            this.ctx.fillRect(cx + r2, cy + y, r1 - r2, 1);
+        }    
+    }
+
+
     public drawBitmap(bmp : Bitmap, flip : Flip = Flip.None,
         dx : number = 0, dy : number = 0,
         sx : number = 0, sy : number = 0,

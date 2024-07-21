@@ -118,7 +118,7 @@ export class Camera {
 
     public isInsideVisibleArea(pos : Vector, area : Rectangle) : boolean {
 
-        return Rectangle.overlay(area, new Rectangle(0, 0, this.cwidth, this.cheight), pos, this.pos);
+        return Rectangle.overlay(area, new Rectangle(this.cwidth/2, this.cheight/2, this.cwidth, this.cheight), pos, this.pos);
     }
 
 

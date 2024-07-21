@@ -12,6 +12,7 @@ import { Flip } from "../gfx/flip.js";
 const HURT_TIME : number = 60;
 const HURT_KNOCKBACK_TIME : number = 20;
 const DEATH_TIME : number = 60;
+const ATTACK_TIME : number = 15.0;
 
 
 export class Player extends CollisionObject {
@@ -19,7 +20,6 @@ export class Player extends CollisionObject {
 
     private jumpTimer : number = 0.0;
     private ledgeTimer : number = 0.0;
-    private touchSurface : boolean = true;
 
     private bodySprite : AnimatedSprite;
     private flip : Flip = Flip.None;
@@ -53,7 +53,6 @@ export class Player extends CollisionObject {
 
     private control(event : ProgramEvent) : void {
 
-        const ATTACK_TIME : number = 15.0;
         const JUMP_TIME : number = 18.0;
         const WALK_SPEED : number = 1.5;
         const BASE_GRAVITY : number = 4.0;
@@ -246,7 +245,7 @@ export class Player extends CollisionObject {
     }
 
 
-    public hurt(dir : -1 | 1, event : ProgramEvent) : void {
+    public hurt(dir : number) : void {
 
         const KNOCKBACK_SPEED : number = 3.0;
 
@@ -282,7 +281,7 @@ export class Player extends CollisionObject {
     }
 
 
-    public hurtCollision(x : number, y : number, w : number, h : number, event : ProgramEvent) : boolean {
+    public hurtCollision(x : number, y : number, w : number, h : number, event : ProgramEvent, flipDir : boolean = true) : boolean {
         
         if (!this.exist || this.dying || this.hurtTimer > 0) {
 
@@ -293,7 +292,9 @@ export class Player extends CollisionObject {
 
             event.audio.playSample("hu", 0.70);
 
-            this.hurt(this.flip == Flip.None ? -1 : 1, event);
+            const hurtDir : number = flipDir ? (this.flip == Flip.None ? -1 : 1) : Math.sign(this.pos.x - (x + w/2));
+            this.hurt(hurtDir);
+
             return true;
         }
         return false;
@@ -351,6 +352,21 @@ export class Player extends CollisionObject {
             const swordX : number = dx + 15 - 46*this.flip;
             canvas.drawBitmap(bmpPlayer, this.flip, swordX, dy + 6, 128, 0, 32, 16);
         }
+    }
+
+
+    public getSwordHitbox() : Rectangle | undefined {
+
+        const SWORD_HURT_TIME = 5;
+
+        if (this.attackTimer <= ATTACK_TIME - SWORD_HURT_TIME) {
+
+            return undefined;
+        }
+
+        return new Rectangle(
+            this.pos.x + 16 - 32*this.flip,
+            this.pos.y + 8, 16, 10);
     }
 
 

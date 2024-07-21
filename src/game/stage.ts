@@ -389,5 +389,26 @@ export class Stage {
 
         // Lava below!
         o.lavaCollision?.((this.height - 1)*TILE_HEIGHT + LAVA_OFFSET, event);
+
+        // Side collisions
+        o.horizontalCollision(0, -128, this.height*TILE_HEIGHT + 128, -1, event);
+        o.horizontalCollision(this.width*TILE_WIDTH, -128, this.height*TILE_HEIGHT + 128, 1, event);
+    }
+
+
+    public iterateEnemyLocations(cb : (x : number, y : number, id? : number) => void) : void {
+
+        for (let y = 0; y < this.height; ++ y) {
+
+            for (let x = 0; x < this.width; ++ x) {
+
+                // Yes, enemies live in static tiles, I tried to put them below
+                // "static indices", but it broke down the levels
+                if (this.staticTiles[1][y*this.width + x] == 126) {
+
+                    cb(x, y, 0);
+                }
+            }
+        }
     }
 }
