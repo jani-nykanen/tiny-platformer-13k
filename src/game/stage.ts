@@ -172,7 +172,7 @@ export class Stage {
 
             if (o.verticalCollision(dx + HORIZONTAL_OFFSET, dy + TILE_HEIGHT, TILE_WIDTH - HORIZONTAL_OFFSET*2, -1, event)) {
 
-                event.audio.playSample("h", 0.75);
+                event.audio.playSample("h", 0.60);
 
                 // Have you ever noticed that in Mario you can never
                 // hit two question blocks at once? This is used to emulate

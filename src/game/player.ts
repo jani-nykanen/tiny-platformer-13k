@@ -274,7 +274,7 @@ export class Player extends CollisionObject {
 
         if (Rectangle.overlay(this.hitbox, new Rectangle(x, y, radius*2, radius*2), this.pos)) {
 
-            event.audio.playSample("c", 0.60);
+            event.audio.playSample("c", 0.50);
             ++ this.coins;
             return true;
         }

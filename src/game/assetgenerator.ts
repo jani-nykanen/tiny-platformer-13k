@@ -494,78 +494,77 @@ const generateSamples = (assets : Assets, audio : AudioPlayer) : void => {
     // Jump
     assets.addSample("j",
         audio.createSample(
-            [64,  6, 
-             112, 5, 
-             160, 4, 
-             224, 3], 
-            0.60,
+            [64,  6, 0.20,
+             112, 5, 0.60,
+             160, 4, 0.70,
+             224, 3, 0.50], 
+            0.70,
             "sawtooth", 
             Ramp.Exponential,
-            6
+            0.20
         ));
 
     // Coin
     assets.addSample("c",
         audio.createSample(
-             [160, 4, 
-              100, 2,  
-             256, 12],
+             [160, 4, 0.60,
+              100, 2, 0.80,
+             256, 12, 1.00],
             0.40,
             "square", 
             Ramp.Instant,
-            6
+            0.20
         ));
 
     // Hit (block)
     assets.addSample("h",
         audio.createSample(
-            [80, 4,
-            96, 3,
-            112, 2
-            ], 
-            0.60,
+            [80, 5, 1.0,
+            96, 4, 0.60,
+            112, 3, 0.40], 
+            0.50,
             "square", 
             Ramp.Instant,
-            3
+            0.40
         ));
 
     // Attack
     assets.addSample("a",
         audio.createSample(
-            [160, 3,
-            128, 2,
-            96, 4
-            ], 
-            0.80,
+            [192, 3, 0.90,
+            144, 5, 1.0, 
+            96, 3, 0.50], 
+            0.65,
             "sawtooth", 
             Ramp.Linear,
-            3
+            0.20
         ));
 
     // Hurt
     assets.addSample("hu",
         audio.createSample(
-            [160, 4,
-            112, 3,
-            96, 6,
-            ], 
-            0.60,
+            [128, 4, 1.0,
+            96, 3, 0.90,
+            80, 8, 0.60], 
+            0.50,
             "square", 
             Ramp.Exponential,
-            2
+            0.30
         ));
 
     // Death
     assets.addSample("d",
         audio.createSample(
-            [96, 6, 
-            144, 4, 
-            96, 8, 
-            64, 24], 
+            [64, 2, 0.50,
+             96, 3, 0.75,
+            176, 4, 1.0,
+            112, 8, 0.80,
+            80, 32, 0.60,
+            64, 8, 0.20], 
             0.50,
             "square", 
             Ramp.Linear, 
-            6
+            0.20
         ));
 }
 

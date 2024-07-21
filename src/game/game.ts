@@ -103,10 +103,7 @@ export class Game implements Scene {
 
         this.stage.drawBackground(canvas, this.camera);
 
-        // const bmpGameArt : Bitmap = canvas.getBitmap?.("g");
-        // canvas.drawBitmap(bmpGameArt, Flip.None, 8, 8);
-        // const bmpTileset : Bitmap = canvas.getBitmap?.("ts");
-        // canvas.drawBitmap(bmpTileset, Flip.None, 96, 8);
+        // Testing some bitmaps, commented out.
         // const bmp : Bitmap = canvas.getBitmap?.("fo");
         // canvas.drawBitmap(bmp, Flip.None, 128, 8);
         

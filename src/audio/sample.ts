@@ -18,14 +18,14 @@ export class Sample {
     private baseVolume : number;
     private type : OscillatorType;
     private ramp : Ramp;
-    private attackTime : number = 0.0;
+    private attack : number = 0.0;
 
     private oscillator : OscillatorNode | undefined = undefined;
 
 
     constructor(ctx : AudioContext, sequence : number[], 
         baseVolume : number, type : OscillatorType,
-        ramp : Ramp, attackTime : number) {
+        ramp : Ramp, attack : number = 1.0) {
 
         this.ctx = ctx;
 
@@ -34,13 +34,14 @@ export class Sample {
         this.baseVolume = baseVolume;
         this.type = type;
         this.ramp = ramp;
-        this.attackTime = attackTime;
+        this.attack = attack;
     }
 
 
     public play(volume : number) : void {
 
-        const INITIAL_VOLUME : number = 0.20;
+        
+        const functions : string[] = ["setValueAtTime", "linearRampToValueAtTime", "exponentialRampToValueAtTime"]; 
 
         const time : number = this.ctx.currentTime;
         const osc : OscillatorNode = this.ctx.createOscillator();
@@ -50,39 +51,30 @@ export class Sample {
 
         volume *= this.baseVolume;
 
+        let latestVolume : number = this.baseSequence[2]*volume;
+
         osc.frequency.setValueAtTime(this.baseSequence[0], time);
-        gain.gain.setValueAtTime(INITIAL_VOLUME*volume, time);
-        gain.gain.exponentialRampToValueAtTime(clamp(volume, 0.01, 1.0), time + this.attackTime/60.0);
+        gain.gain.setValueAtTime(this.attack*latestVolume, time);
+
+        // TODO: this.attack might be redundant, also should the next
+        // loop start from the second "note" or the first one like now?
 
         let timer : number = 0.0;
-        for (let i = 0; i < this.baseSequence.length; i += 2) {
+        for (let i = 0; i < this.baseSequence.length; i += 3) {
 
             const freq : number = this.baseSequence[i];
             const len : number = this.baseSequence[i + 1];
 
-            switch (this.ramp) {
-            
-            default:
-                // Fallthrough
-            case Ramp.Instant:
+            latestVolume = clamp(this.baseSequence[i + 2]*this.baseVolume, 0.0001, 1.0);
 
-                osc.frequency.setValueAtTime(freq, time + timer);
-                break;
+            const func : string = functions[this.ramp] ?? functions[0];
 
-            case Ramp.Linear:
+            osc.frequency[func](freq, time + timer);
+            gain.gain[func](latestVolume, time + timer);
 
-                osc.frequency.linearRampToValueAtTime(freq, time + timer);
-                break;
-
-            case Ramp.Exponential:
-
-                osc.frequency.exponentialRampToValueAtTime(freq, time + timer);
-                break;
-
-            }
             timer += 1.0/60.0*len;
         }
-        gain.gain.exponentialRampToValueAtTime(volume*0.50, time + timer);
+        gain.gain.exponentialRampToValueAtTime(latestVolume*0.50, time + timer);
         
         osc.connect(gain).connect(this.ctx.destination);
         osc.start(time);
