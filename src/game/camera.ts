@@ -123,8 +123,7 @@ export class Camera {
 
 
     public apply(canvas : Canvas) : void {
-
-        // TODO: round vs floor?
+        
         canvas.moveTo(-(this.pos.x), -(this.pos.y));
     }
 

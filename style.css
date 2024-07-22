@@ -15,7 +15,7 @@ body {
 }
 
 
-#div_initialize {
+#i {
 
     text-align: center; 
     font-family: monospace; 
@@ -29,7 +29,7 @@ body {
 }
 
 
-#init_text {
+#it {
 
     color: rgb(224, 224, 224);
 }

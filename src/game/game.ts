@@ -79,6 +79,7 @@ export class Game implements Scene {
         if (event.transition.isActive()) {
 
             this.camera.update(event);
+            this.objects.initialCameraCheck(this.camera, event);
             this.stage.update(event);
             return;
         }
@@ -100,13 +101,8 @@ export class Game implements Scene {
     public redraw(canvas : Canvas) : void {
         
         canvas.moveTo();
-
         this.stage.drawBackground(canvas, this.camera);
 
-        // Testing some bitmaps, commented out.
-        // const bmp : Bitmap = canvas.getBitmap?.("e");
-        // canvas.drawBitmap(bmp, Flip.None, 64, 32);
-        
         this.camera.apply(canvas);
         this.stage.drawLayers(canvas, this.camera);
         this.objects.draw(canvas);

@@ -64,7 +64,7 @@ export class Stage {
 
             // We assume that the first 128 tiles are "normal", and 
             // the rest are possibly objects
-            this.staticTiles[i] = this.baseMap.cloneLayer(i, 128) ?? [];
+            this.staticTiles[i] = this.baseMap.cloneLayer(i) ?? [];
         }
 
         this.collisions = new Array<number> (this.width*this.height);
@@ -172,7 +172,7 @@ export class Stage {
 
             if (o.verticalCollision(dx + HORIZONTAL_OFFSET, dy + TILE_HEIGHT, TILE_WIDTH - HORIZONTAL_OFFSET*2, -1, event)) {
 
-                event.audio.playSample("h", 0.60);
+                event.audio.playSample("h", 0.70);
 
                 // Have you ever noticed that in Mario you can never
                 // hit two question blocks at once? This is used to emulate

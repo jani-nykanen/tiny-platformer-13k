@@ -35,11 +35,13 @@ export class Sample {
         this.type = type;
         this.ramp = ramp;
         this.attack = attack;
+
+        // IMPORTANT TODO: Use a different ramp for volume,
+        // no room in this project, sadly...
     }
 
 
     public play(volume : number) : void {
-
         
         const functions : string[] = ["setValueAtTime", "linearRampToValueAtTime", "exponentialRampToValueAtTime"]; 
 
@@ -65,7 +67,7 @@ export class Sample {
             const freq : number = this.baseSequence[i];
             const len : number = this.baseSequence[i + 1];
 
-            latestVolume = clamp(this.baseSequence[i + 2]*this.baseVolume, 0.0001, 1.0);
+            latestVolume = clamp(this.baseSequence[i + 2]*volume, 0.0001, 1.0);
 
             const func : string = functions[this.ramp] ?? functions[0];
 

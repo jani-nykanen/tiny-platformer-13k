@@ -292,6 +292,23 @@ const generateMisc = (canvas : Canvas, bmpGameArt : Bitmap) : void => {
         canvas.fillRect(84 + i*8, 39, 1, 1);
         canvas.fillRect(96, 46, 1, 2);
     }
+
+    // Flag pole "leg"
+    canvas.drawBitmap(bmpGameArt, Flip.None, 166, 40, 16, 40, 5, 8);
+    canvas.drawBitmap(bmpGameArt, Flip.None, 166 + 5, 40, 20, 40, 4, 8);
+    canvas.drawBitmap(bmpGameArt, Flip.None, 166, 40, 16, 32, 8, 8);
+    canvas.fillRect(175, 46, 1, 2);
+
+    // Flag pole pole
+    canvas.fillRect(169, 8, 4, 33);
+    canvas.setFillColor("#db6d00");
+    canvas.fillRect(170, 8, 2, 32);
+    canvas.setFillColor("#ffb66d");
+    canvas.fillRect(170, 8, 1, 32);
+
+    // "Flag"
+    canvas.drawBitmap(bmpGameArt, Flip.None, 168, 0, 56, 48, 8, 8);
+    canvas.drawBitmap(bmpGameArt, Flip.None, 162, 0, 24, 80, 8, 8);
 }
 
 
@@ -471,8 +488,6 @@ const generateHUDIcons = (assets : Assets) : void => {
 
 const generateFonts = (assets : Assets) : void => {
 
-    const YOFF : number = 32;
-
     const bmpFontRaw : Bitmap = assets.getBitmap("_f");
 
     const fontBlack : Bitmap = applyPalette(bmpFontRaw, 
@@ -482,16 +497,19 @@ const generateFonts = (assets : Assets) : void => {
         (new Array<string>(16*8)).fill("0002"), 
         PALETTE_LOOKUP);
 
-    const canvas : Canvas = new Canvas(256, 64 + YOFF);
+    const canvas : Canvas = new Canvas(256, 64);
 
     assets.addBitmap("fw", fontWhite);
+    assets.addBitmap("fy", applyPalette(bmpFontRaw, 
+        (new Array<string>(16*8)).fill("000K"), 
+        PALETTE_LOOKUP));
 
     for (let y = 0; y < 4; ++ y) {
 
         for (let x = 0; x < 16; ++ x) {
 
             const dx : number = x*16 + 4;
-            const dy : number = YOFF + y*16 + 6
+            const dy : number = y*16 + 6
 
             // Outlines
             for (let i = -1; i <= 1; ++ i) {
@@ -528,7 +546,7 @@ const generateSamples = (assets : Assets, audio : AudioPlayer) : void => {
                 112, 5, 0.60,
                 160, 4, 0.70,
                 224, 3, 0.50], 
-                0.70,
+                0.80,
                 "sawtooth", 
                 Ramp.Exponential,
                 0.20
@@ -553,7 +571,7 @@ const generateSamples = (assets : Assets, audio : AudioPlayer) : void => {
             [80, 5, 1.0,
             96, 4, 0.60,
             112, 3, 0.40], 
-            0.50,
+            0.60,
             "square", 
             Ramp.Instant,
             0.40
@@ -609,6 +627,37 @@ const generateSamples = (assets : Assets, audio : AudioPlayer) : void => {
             "sawtooth", 
             Ramp.Linear, 
             0.30
+        ));
+
+    // Start
+    assets.addSample("s",
+        audio.createSample(
+            [128, 10, 1.0,
+             96, 6, 0.20], 
+            0.60,
+            "square", 
+            Ramp.Instant,
+            0.40
+        ));
+
+    // Funny ending sound
+    assets.addSample("e",
+        audio.createSample(
+            [112, 4, 0.50,
+             160, 4, 1.0,
+             112, 5, 1.0,
+             160, 5, 1.0,
+             112, 6, 1.0,
+             160, 6, 1.0,
+             112, 7, 1.0,
+             160, 7, 1.0,
+             112, 8, 0.80,
+             160, 8, 0.80,
+             192, 32, 0.50], 
+            0.60,
+            "square", 
+            Ramp.Linear,
+            0.40
         ));
 }
 

@@ -1,4 +1,3 @@
-import { Assets } from "../core/assets.js";
 import { Vector } from "../math/vector.js";
 import { Align } from "./align.js";
 import { Flip } from "./flip.js";
@@ -368,7 +367,8 @@ export class Canvas {
             }
 
             this.drawBitmap(font, Flip.None, 
-                x, y, (chr % 16)*cw, ((chr/16) | 0)*ch, 
+                x, y, (chr % 16)*cw, 
+                (((chr/16) | 0) - 2)*ch, // To save space we do not have the first two lines in our fonts
                 cw, ch, cw*scalex, ch*scaley);
 
             x += (cw + xoff)*scalex;

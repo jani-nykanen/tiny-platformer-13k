@@ -56,12 +56,29 @@ export class ObjectManager {
                 e.playerCollision(this.player, event);
             }
         }
+
+        // Don't have room for a better ending, sorry
+        if (this.player.getPosition().x > ((132 + 0.50)*TILE_WIDTH)) {
+
+            event.audio.playSample("e", 0.60);
+
+            throw new Error("Sorry, didn't have room for an ending!\n");
+        }
+    }
+
+
+    public initialCameraCheck(camera : Camera, event : ProgramEvent) : void {
+
+        for (const e of this.enemies) {
+
+            e.cameraCheck(camera, event);
+        }
     }
 
 
     public draw(canvas : Canvas) : void {
 
-        const bmpEnemy : Bitmap = canvas.getBitmap("e");
+        const bmpEnemy : Bitmap = canvas.getBitmap?.("e");
         for (const e of this.enemies) {
 
             e.draw(canvas, bmpEnemy);

@@ -1,3 +1,4 @@
+import { ProgramEvent } from "./event.js";
 import { Scene } from "./scene.js";
 
 
@@ -30,5 +31,19 @@ export class SceneManager {
 
             this.activeSceneRef = scene;
         }
+    }
+
+
+    public changeScene(newScene : string, event : ProgramEvent) : void {
+
+        const scene : Scene | undefined = this.scenes[newScene];
+        if (scene === undefined) {
+
+            return;
+        }
+        
+
+        scene?.onChange(this.activeSceneRef?.dispose?.(), event);
+        this.activeSceneRef = scene;
     }
 }

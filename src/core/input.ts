@@ -43,7 +43,7 @@ export class Input {
 
         window.addEventListener("mousedown", () => { window.focus(); });
         window.addEventListener("mousemove", () => { window.focus();});
-        // window.addEventListener("contextmenu", (e : MouseEvent) => e.preventDefault());
+        window.addEventListener("contextmenu", (e : MouseEvent) => e.preventDefault());
     }
 
 

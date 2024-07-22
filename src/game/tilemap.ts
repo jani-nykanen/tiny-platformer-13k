@@ -39,9 +39,7 @@ export class Tilemap {
     }
 
 
-    public cloneLayer = (layer : number, cutoff? : number) : number[] | undefined => Array.from(
-        this.layers[layer].filter((v : number) => cutoff === undefined ? true : v <= cutoff)
-    );
+    public cloneLayer = (layer : number) : number[] | undefined => Array.from(this.layers[layer]);
 
 
     public getTile(layer : number, x : number, y : number, def : number = 0) : number {

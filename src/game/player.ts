@@ -90,7 +90,7 @@ export class Player extends CollisionObject {
             this.jumpTimer = JUMP_TIME;
             this.ledgeTimer = 0.0;
 
-            event.audio.playSample("j", 0.60);
+            event.audio.playSample("j", 0.80);
         }
         else if ((jumpButton & InputState.DownOrPressed) == 0) {
 
@@ -109,7 +109,7 @@ export class Player extends CollisionObject {
         
             this.canAttack = false;
 
-            event.audio.playSample("a", 0.70);
+            event.audio.playSample("a", 0.80);
         }
     }
 
@@ -273,7 +273,7 @@ export class Player extends CollisionObject {
 
         if (Rectangle.overlay(this.hitbox, new Rectangle(x, y, radius*2, radius*2), this.pos)) {
 
-            event.audio.playSample("c", 0.50);
+            event.audio.playSample("c", 0.70);
             ++ this.coins;
             return true;
         }

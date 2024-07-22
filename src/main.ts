@@ -2,6 +2,7 @@ import { ProgramEvent } from "./core/event.js";
 import { Program } from "./core/program.js";
 import { Game } from "./game/game.js";
 import { generateAssets } from "./game/assetgenerator.js";
+import { TitleScreen } from "./game/titlescreen.js";
 
 
 const initialEvent = (event : ProgramEvent) : void => {
@@ -18,7 +19,8 @@ const onloadEvent = (event : ProgramEvent) : void => {
     event.input.addAction("j", ["Space", "KeyZ"]);
     event.input.addAction("a", ["ControlLeft", "KeyX"]);
 
-    event.scenes.addScene("game", new Game(event), true);
+    event.scenes.addScene("g", new Game(event), false);
+    event.scenes.addScene("t", new TitleScreen(), true);
 
     generateAssets(event.assets, event.audio);
 }
@@ -28,10 +30,10 @@ const printError = (e : Error) : void => {
 
     console.log(e.stack);
 
-    document.getElementById("base_div")?.remove();
+    document.getElementById("d")?.remove();
 
     const textOut : HTMLElement = document.createElement("b");
-    textOut.setAttribute("style", "color: rgb(224,73,73); font-size: 16px");
+    textOut.setAttribute("style", "color: rgb(224,73,73); font-size: 1.5em");
     textOut.innerText = "Fatal error:\n\n " + e.message;
 
     document.body.appendChild(textOut);
@@ -45,7 +47,7 @@ function waitForInitialEvent() : Promise<AudioContext> {
         window.addEventListener("keydown", (e : KeyboardEvent) => {
 
             e.preventDefault();
-            document.getElementById("div_initialize")?.remove();
+            document.getElementById("i")?.remove();
     
             const ctx : AudioContext = new AudioContext();
             resolve(ctx);
@@ -57,7 +59,7 @@ function waitForInitialEvent() : Promise<AudioContext> {
 
 window.onload = () => (async () => {
     
-    document.getElementById("init_text")!.innerText = "Press Any Key to Start";
+    document.getElementById("it")!.innerText = "Press Any Key to Start";
 
     const ctx : AudioContext = await waitForInitialEvent();
     try {

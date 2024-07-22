@@ -103,9 +103,12 @@ export class Enemy extends CollisionObject {
 
             this.speed.x = this.target.x;
             e.speed.x = e.target.x;
+            
+            const midx : number = (this.pos.x + e.pos.x)/2;
+            const dir : number = Math.sign(this.speed.x);
 
-            // TODO: Also update the x axis, if I happen to find
-            // spare space...
+            this.pos.x = midx + this.hitbox.w/2*dir;
+            e.pos.x = midx - this.hitbox.w/2*dir;
         }
     }
 
