@@ -4,3 +4,6 @@
 *.wav filter=lfs diff=lfs merge=lfs -text
 *.mmpz filter=lfs diff=lfs merge=lfs -text
 *.xcf filter=lfs diff=lfs merge=lfs -text
+
+play/assets/gameart.png !filter !diff !merge text 
+play/assets/font.png !filter !diff !merge text 
