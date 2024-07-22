@@ -35,9 +35,6 @@ export class Sample {
         this.type = type;
         this.ramp = ramp;
         this.attack = attack;
-
-        // IMPORTANT TODO: Use a different ramp for volume,
-        // no room in this project, sadly...
     }
 
 
@@ -48,6 +45,7 @@ export class Sample {
         const time : number = this.ctx.currentTime;
         const osc : OscillatorNode = this.ctx.createOscillator();
         const gain : GainNode = this.ctx.createGain();
+        const func : string = functions[this.ramp] ?? functions[0];
         
         osc.type = this.type;
 
@@ -58,8 +56,9 @@ export class Sample {
         osc.frequency.setValueAtTime(this.baseSequence[0], time);
         gain.gain.setValueAtTime(this.attack*latestVolume, time);
 
-        // TODO: this.attack might be redundant, also should the next
-        // loop start from the second "note" or the first one like now?
+        // TODO: It feels weird to start from index 0 since
+        // the first "note" is assigned double. However, it does
+        // not seem to play anything otherwise
 
         let timer : number = 0.0;
         for (let i = 0; i < this.baseSequence.length; i += 3) {
@@ -68,8 +67,6 @@ export class Sample {
             const len : number = this.baseSequence[i + 1];
 
             latestVolume = clamp(this.baseSequence[i + 2]*volume, 0.0001, 1.0);
-
-            const func : string = functions[this.ramp] ?? functions[0];
 
             osc.frequency[func](freq, time + timer);
             gain.gain[func](latestVolume, time + timer);

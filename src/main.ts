@@ -64,7 +64,7 @@ window.onload = () => (async () => {
     const ctx : AudioContext = await waitForInitialEvent();
     try {
 
-        (new Program(256, 1024, 192, 192, ctx, 0.80)).run(printError, initialEvent, onloadEvent);
+        (new Program(256, 1024, 192, 192, ctx, 0.60)).run(printError, initialEvent, onloadEvent);
     }
     catch (e : any) {
 
